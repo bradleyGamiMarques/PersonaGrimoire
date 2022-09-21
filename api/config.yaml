@@ -1,0 +1,10 @@
+output: gen.go
+package: api
+output-options:
+  skip-prune: true
+generate:
+  client: true
+  strict-server: true
+  echo-server: true
+  models: true
+  embedded-spec: true

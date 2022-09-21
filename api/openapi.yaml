@@ -1,0 +1,12 @@
+openapi: "3.0"
+info:
+  title: Persona Grimoire API
+  version: "1.0"
+paths:
+  /foo:
+    get:
+      operationId: foo
+    description: get a foo
+    responses:
+      200:
+        description: OK
