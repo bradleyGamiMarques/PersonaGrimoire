@@ -41,7 +41,10 @@
 ### Windows
  1. Clone down the project to your local machine.
  2. Install Make via [chocolatey](https://chocolatey.org/install)
+
+
  ![Chocolatey command](https://www.technewstoday.com/wp-content/uploads/2021/11/install-choco-make.webp)
+ 
  3. From the command prompt/powershell in the project folder run `make all`.
  
     This command will generate the API types, build the project, and start the server on PORT 5000.
