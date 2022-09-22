@@ -19,6 +19,36 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// ErrorBaseResponse defines model for ErrorBaseResponse.
+type ErrorBaseResponse struct {
+	Code    int    `json:"Code"`
+	Data    string `json:"Data"`
+	Error   bool   `json:"Error"`
+	Message string `json:"Message"`
+	Ping    bool   `json:"Ping"`
+}
+
+// BadRequest defines model for BadRequest.
+type BadRequest = ErrorBaseResponse
+
+// Forbidden defines model for Forbidden.
+type Forbidden = ErrorBaseResponse
+
+// MissingSubject defines model for MissingSubject.
+type MissingSubject = ErrorBaseResponse
+
+// NoContent defines model for NoContent.
+type NoContent = map[string]interface{}
+
+// NotFound defines model for NotFound.
+type NotFound = ErrorBaseResponse
+
+// ServerError defines model for ServerError.
+type ServerError = ErrorBaseResponse
+
+// Unauthorized defines model for Unauthorized.
+type Unauthorized = ErrorBaseResponse
+
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
 
@@ -281,6 +311,20 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
+type BadRequestJSONResponse ErrorBaseResponse
+
+type ForbiddenJSONResponse ErrorBaseResponse
+
+type MissingSubjectJSONResponse ErrorBaseResponse
+
+type NoContentJSONResponse map[string]interface{}
+
+type NotFoundJSONResponse ErrorBaseResponse
+
+type ServerErrorJSONResponse ErrorBaseResponse
+
+type UnauthorizedJSONResponse ErrorBaseResponse
+
 type FooRequestObject struct {
 }
 
@@ -334,9 +378,17 @@ func (sh *strictHandler) Foo(ctx echo.Context) error {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/2SMsY7DIBBEfwVNjXzcXUd3zUVWivgXkL1OkOxdxJI0iH+PcKooW63mzbyKWfYkTFwU",
-	"vjaLyKvAV5RYNoLHRFmFgznluEvMZP6mERYPyhqF4fE9ODQLScQhRXj8Dg4WKZRbV+JrlUO4kM45pvJa",
-	"XamYYDqy/e8FSZRDx+MCj/8DZdIkrKTwfN+29pZU/Dj3qb6c0fo9AwAA//91ik1q3AAAAA==",
+	"H4sIAAAAAAAC/8xVwXLbOAz9FQx3j4rl3dx02ySbncxO20zSnjo9UNKTxYxMqADpTJvRv3dIKbYz8aFH",
+	"n0wZBPCAhwe+mIa3I3v4oKZ6MQId2Svyx5VtH/A9QkP6atgH+Hy04zi4xgbHvnxS9uk/bXpsbTr9KehM",
+	"Zf4oD6HL2arlvyIsV1bxsCQy0zQVpoU24sYU0FTmc++UkG7SbKih9NzDU+hBMkOihuPQkudANaiLQ+eG",
+	"Ae0qO3MX4Km34wivVKOxUUHckaWtU3V+sw8zWrFbBMjKTIW5Zald28KfU8VRIdQyNFfb2x1ohORC2FNg",
+	"sk0DVbIkUI7SINfyYa70MdZPaM6KwmZw8IGc7tk4JlZnwLmGj3x9wPzb8MOPEaYyPBd+Et4h3bNV0pg7",
+	"2MWB6hhIEKJ4pOmi1ga7QAm3HH17Lo20tHE7+D3n1Fj/qoaEM4N+hOwgOdO54FbeIvSJ9Nq2i0bREnvi",
+	"KIQF+BdvY+hZ3E+0Z6dFD7SahFeDDjCpRseCRY3zVDs91uRULEDzen2Ppnoxo/AICW7ewNfc4mignQ/Y",
+	"QFJ/bmw4HnUN4vwmGfZcL5aaeYD1eSFA1W5w0u0+/Z7wmgqThOIk0fB1TlvMuA4BX7MuYb4VpxTofMc5",
+	"gwtDst1DlL2l/8Rt2Qnon/s7U5gdRGci/lqtE7LBNVia4+02eV493lxcXlwPaambwkQZTGX6EEatypLT",
+	"yp8bzrIpF28t3zhNhUn37OhMZS5Xa1OY0YY+97zsOON8OxUbBLKUTEU6pwuJqDyFd62pzG02Hb2fPg7D",
+	"VLx9Uf9er9+H/vR/atA0/QoAAP//OCx4rYwHAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

@@ -2,6 +2,9 @@ openapi: "3.0"
 info:
   title: Persona Grimoire API
   version: "1.0"
+license:
+  name: BSD-3-Clause
+  url: https://opensource.org/licenses/BSD-3-Clause
 paths:
   /foo:
     get:
@@ -10,3 +13,68 @@ paths:
     responses:
       200:
         description: OK
+components:
+  responses:
+    NoContent:
+      description: The request was successful but returned no data.
+      content:
+        application/json:
+          schema:
+            type: object
+    BadRequest:
+      description: This error describes when the request could not be fulfilled.This often happens because of a missing request parameter.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorBaseResponse"
+    Unauthorized:
+      description: This error describes when the user needs to be authorized before accessing this resource.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorBaseResponse"
+    Forbidden:
+      description: This error describes when the user does not have permission to access a resource.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorBaseResponse"
+    NotFound:
+      description: This error describes when a given resource cannot be found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorBaseResponse"
+    ServerError:
+      description: This error describes when something bad happened on our end.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorBaseResponse"
+    MissingSubject:
+      description: This error describes when the client is missing the request subject.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorBaseResponse"
+  schemas:
+    ErrorBaseResponse:
+      description:
+      type: object
+      required:
+        - Data
+        - Code
+        - Message
+        - Error
+        - Ping
+      properties:
+        Data:
+          type: string
+        Code:
+          type: integer
+        Message:
+          type: string
+        Error:
+          type: boolean
+        Ping:
+          type: boolean
