@@ -14,10 +14,27 @@ import (
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
+
+// Arcana defines model for Arcana.
+type Arcana struct {
+	// ArcanaID A universally unique identifier for identifying one of the 22 Major Arcana.
+	ArcanaID uuid.UUID `gorm:"primarykey;type:uuid" json:"ArcanaID"`
+
+	// ArcanaName The name of the Major Arcana.
+	ArcanaName string `json:"ArcanaName" validate:"min=3,max=10"`
+
+	// ArcanaNumber A number from 0 - 21 representing one of the 22 Major Arcana from tarot cards.
+	ArcanaNumber int `json:"ArcanaNumber" validate:"min=0,max=21"`
+
+	// ArcanaNumeral A Roman Numeral representation of the Arcana Number. The exeception is the Fool Arcana which does not have an associated numeral. It is represented with "0".
+	ArcanaNumeral string `json:"ArcanaNumeral" validate:"min=1,max=3"`
+}
 
 // ErrorBaseResponse defines model for ErrorBaseResponse.
 type ErrorBaseResponse struct {
@@ -26,6 +43,78 @@ type ErrorBaseResponse struct {
 	Error   bool   `json:"Error"`
 	Message string `json:"Message"`
 	Ping    bool   `json:"Ping"`
+}
+
+// P5Persona defines model for P5Persona.
+type P5Persona struct {
+	// Arcana A universally unique identifier for identifying one of the 22 Major Arcana. Each Persona has one arcana.
+	Arcana uuid.UUID `gorm:"primarykey;type:uuid" json:"Arcana"`
+
+	// CreatedAt Represents when the Persona was added to the database.
+	CreatedAt time.Time `json:"-"`
+
+	// DLC Represents if the Persona is only available via Downloadable Content.
+	DLC bool `json:"DLC"`
+
+	// Level The level of the Persona 5 when first encountered during fusion. The main character must be at least this level in order to fuse this Persona.
+	Level int `json:"Level" validate:"min=1,max=99"`
+
+	// Name The name of the Persona 5 Persona.
+	Name string `json:"Name" validate:"min=1,max=24"`
+
+	// PersonaID A universally unique identifier for identifying a Persona 5 Persona.
+	PersonaID uuid.UUID `gorm:"primarykey;type:uuid" json:"PersonaID"`
+
+	// Skill A universally unique identifier for identifying a skill that a Persona can learn.
+	Skill *uuid.UUID `json:"Skill,omitempty"`
+
+	// TreasureDemon Represents if the Persona is a treasure demon. Unique field to Persona 5 and Persona 5 Royal.
+	TreasureDemon bool `json:"TreasureDemon"`
+
+	// UpdatedAt Represents the last time when the Persona was updated in the database.
+	UpdatedAt time.Time `json:"-"`
+}
+
+// P5PersonaSkill defines model for P5PersonaSkill.
+type P5PersonaSkill struct {
+	// CreatedAt Represents when the skill was added to the database.
+	CreatedAt *time.Time `json:"-"`
+
+	// SkillCost The cost to use the skill.
+	SkillCost *string `json:"SkillCost,omitempty"`
+
+	// SkillEffect The in-game description of what the skill does when used by the player.
+	SkillEffect *string `json:"SkillEffect,omitempty"`
+
+	// SkillID A universally unique identifier for identifying a skill that a Persona can learn.
+	SkillID *uuid.UUID `gorm:"primarykey;type:uuid" json:"SkillID,omitempty"`
+
+	// SkillName The in-game name for the skill.
+	SkillName *string `json:"SkillName,omitempty"`
+
+	// UpdatedAt Represents the last time when the skill was updated in the database.
+	UpdatedAt *time.Time `json:"-"`
+}
+
+// P5PersonaStats defines model for P5PersonaStats.
+type P5PersonaStats struct {
+	// Agility An integer that represents the Persona's Agility stat.
+	Agility int `json:"Agility" validate:"min=1,max=99"`
+
+	// Endurance An integer that represents the Persona's Endurance stat.
+	Endurance int `json:"Endurance" validate:"min=1,max=99"`
+
+	// Luck An integer that represents the Persona's Luck stat.
+	Luck int `json:"Luck" validate:"min=1,max=99"`
+
+	// Magic An integer that represents the Persona's Magic stat.
+	Magic int `json:"Magic" validate:"min=1,max=99"`
+
+	// StatsID A universally unique identifier for identifying a Persona 5 Persona's stats.
+	StatsID uuid.UUID `gorm:"primarykey;type:uuid" json:"StatsID"`
+
+	// Strength An integer that represents the Persona's Strength stat.
+	Strength int `json:"Strength" validate:"min=1,max=99"`
 }
 
 // BadRequest defines model for BadRequest.
@@ -378,17 +467,32 @@ func (sh *strictHandler) Foo(ctx echo.Context) error {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/8xVwXLbOAz9FQx3j4rl3dx02ySbncxO20zSnjo9UNKTxYxMqADpTJvRv3dIKbYz8aFH",
-	"n0wZBPCAhwe+mIa3I3v4oKZ6MQId2Svyx5VtH/A9QkP6atgH+Hy04zi4xgbHvnxS9uk/bXpsbTr9KehM",
-	"Zf4oD6HL2arlvyIsV1bxsCQy0zQVpoU24sYU0FTmc++UkG7SbKih9NzDU+hBMkOihuPQkudANaiLQ+eG",
-	"Ae0qO3MX4Km34wivVKOxUUHckaWtU3V+sw8zWrFbBMjKTIW5Zald28KfU8VRIdQyNFfb2x1ohORC2FNg",
-	"sk0DVbIkUI7SINfyYa70MdZPaM6KwmZw8IGc7tk4JlZnwLmGj3x9wPzb8MOPEaYyPBd+Et4h3bNV0pg7",
-	"2MWB6hhIEKJ4pOmi1ga7QAm3HH17Lo20tHE7+D3n1Fj/qoaEM4N+hOwgOdO54FbeIvSJ9Nq2i0bREnvi",
-	"KIQF+BdvY+hZ3E+0Z6dFD7SahFeDDjCpRseCRY3zVDs91uRULEDzen2Ppnoxo/AICW7ewNfc4mignQ/Y",
-	"QFJ/bmw4HnUN4vwmGfZcL5aaeYD1eSFA1W5w0u0+/Z7wmgqThOIk0fB1TlvMuA4BX7MuYb4VpxTofMc5",
-	"gwtDst1DlL2l/8Rt2Qnon/s7U5gdRGci/lqtE7LBNVia4+02eV493lxcXlwPaambwkQZTGX6EEatypLT",
-	"yp8bzrIpF28t3zhNhUn37OhMZS5Xa1OY0YY+97zsOON8OxUbBLKUTEU6pwuJqDyFd62pzG02Hb2fPg7D",
-	"VLx9Uf9er9+H/vR/atA0/QoAAP//OCx4rYwHAAA=",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

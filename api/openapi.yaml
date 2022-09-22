@@ -78,3 +78,181 @@ components:
           type: boolean
         Ping:
           type: boolean
+
+    ####################
+    # Database Schemas #
+    ####################
+    P5Persona:
+      x-oapi-codegen-extra-tags:
+        gorm: "foreignKey:ArcanaID;references:Arcana"
+      type: object
+      required:
+        - PersonaID
+        - Name
+        - Level
+        - Arcana
+        - DLC
+        - TreasureDemon
+        - CreatedAt
+        - UpdatedAt
+      properties:
+        PersonaID:
+          description: A universally unique identifier for identifying a Persona 5 Persona.
+          type: string
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/google/uuid
+          x-oapi-codegen-extra-tags:
+            gorm: "primarykey;type:uuid"
+        Name:
+          description: The name of the Persona 5 Persona.
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "min=1,max=24"
+        Level:
+          description: The level of the Persona 5 when first encountered during fusion. The main character must be at least this level in order to fuse this Persona.
+          type: integer
+          x-oapi-codegen-extra-tags:
+            validate: "min=1,max=99"
+        Arcana:
+          description: A universally unique identifier for identifying one of the 22 Major Arcana. Each Persona has one arcana.
+          type: string
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/google/uuid
+          x-oapi-codegen-extra-tags:
+            gorm: "primarykey;type:uuid"
+        DLC:
+          description: Represents if the Persona is only available via Downloadable Content.
+          type: boolean
+        TreasureDemon:
+          description: Represents if the Persona is a treasure demon. Unique field to Persona 5 and Persona 5 Royal.
+          type: boolean
+        CreatedAt:
+          description: Represents when the Persona was added to the database.
+          type: string
+          x-go-type: time.Time
+          x-oapi-codegen-extra-tags:
+            json: "-"
+        UpdatedAt:
+          description: Represents the last time when the Persona was updated in the database.
+          type: string
+          x-go-type: time.Time
+          x-oapi-codegen-extra-tags:
+            json: "-"
+        Skill:
+          description: A universally unique identifier for identifying a skill that a Persona can learn.
+          type: string
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/google/uuid
+    Arcana:
+      type: object
+      required:
+        - ArcanaID
+        - ArcanaNumber
+        - ArcanaName
+        - ArcanaNumeral
+      properties:
+        ArcanaID:
+          description: A universally unique identifier for identifying one of the 22 Major Arcana.
+          type: string
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/google/uuid
+          x-oapi-codegen-extra-tags:
+            gorm: "primarykey;type:uuid"
+        ArcanaNumber:
+          description: A number from 0 - 21 representing one of the 22 Major Arcana from tarot cards.
+          type: integer
+          x-oapi-codegen-extra-tags:
+            validate: "min=0,max=21"
+        ArcanaName:
+          description: The name of the Major Arcana.
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "min=3,max=10"
+        ArcanaNumeral:
+          description: A Roman Numeral representation of the Arcana Number. The exeception is the Fool Arcana which does not have an associated numeral. It is represented with "0".
+          type: string
+          x-oapi-codegen-extra-tags:
+            validate: "min=1,max=3"
+    P5PersonaStats:
+      x-oapi-codegen-extra-tags:
+        gorm: "foreignKey:PersonaID;references:StatsID"
+      type: object
+      required:
+        - StatsID
+        - Strength
+        - Magic
+        - Endurance
+        - Agility
+        - Luck
+      properties:
+        StatsID:
+          description: A universally unique identifier for identifying a Persona 5 Persona's stats.
+          type: string
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/google/uuid
+          x-oapi-codegen-extra-tags:
+            gorm: "primarykey;type:uuid"
+        Strength:
+          description: An integer that represents the Persona's Strength stat.
+          type: integer
+          x-oapi-codegen-extra-tags:
+            validate: "min=1,max=99"
+        Magic:
+          description: An integer that represents the Persona's Magic stat.
+          type: integer
+          x-oapi-codegen-extra-tags:
+            validate: "min=1,max=99"
+        Endurance:
+          description: An integer that represents the Persona's Endurance stat.
+          type: integer
+          x-oapi-codegen-extra-tags:
+            validate: "min=1,max=99"
+        Agility:
+          description: An integer that represents the Persona's Agility stat.
+          type: integer
+          x-oapi-codegen-extra-tags:
+            validate: "min=1,max=99"
+        Luck:
+          description: An integer that represents the Persona's Luck stat.
+          type: integer
+          x-oapi-codegen-extra-tags:
+            validate: "min=1,max=99"
+    P5PersonaSkill:
+      x-oapi-codegen-extra-tags:
+        gorm: "foreignKey:Skill;references:SkillID"
+      type: object
+      properties:
+        SkillID:
+          description: A universally unique identifier for identifying a skill that a Persona can learn.
+          type: string
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/google/uuid
+          x-oapi-codegen-extra-tags:
+            gorm: "primarykey;type:uuid"
+        SkillName:
+          description: The in-game name for the skill.
+          type: string
+        SkillCost:
+          description: The cost to use the skill.
+          type: string
+        SkillEffect:
+          description: The in-game description of what the skill does when used by the player.
+          type: string
+        CreatedAt:
+          description: Represents when the skill was added to the database.
+          type: string
+          x-go-type: time.Time
+          x-oapi-codegen-extra-tags:
+            json: "-"
+        UpdatedAt:
+          description: Represents the last time when the skill was updated in the database.
+          type: string
+          x-go-type: time.Time
+          x-oapi-codegen-extra-tags:
+            json: "-"
