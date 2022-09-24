@@ -7,7 +7,7 @@ import (
 )
 
 func RegisterDatabaseComponents(gorm *gorm.DB, logger *logrus.Logger) {
-	migrationError := gorm.AutoMigrate(&api.Arcana{})
+	migrationError := gorm.AutoMigrate(&api.P5Arcana{})
 	if migrationError != nil {
 		logger.Panicf("gorm Migration Error for Arcana: %v", migrationError)
 	}

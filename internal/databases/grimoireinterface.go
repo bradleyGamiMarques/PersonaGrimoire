@@ -3,10 +3,16 @@ package databases
 import (
 	"context"
 
-	"github.com/google/uuid"
+	"github.com/bradleyGamiMarques/PersonaGrimoire/api"
 )
 
 type PersonaGrimoire interface {
-	CheckIfArcanaExistsByUUID(ctx context.Context, arcanaID uuid.UUID) (exists bool, err error)
-	CheckIfArcanaExistsByName(ctx context.Context, arcanaName string) (exists bool, err error)
+	// Check for specific things existing.
+	CheckIfArcanaExistsByUUID(ctx context.Context, arcanaUUID api.ArcanaID) (exists bool, err error)
+	CheckIfArcanaExistsByName(ctx context.Context, arcanaName api.ArcanaName) (exists bool, err error)
+
+	// CRUDs relating to P5 Arcanas
+	// GET
+	GetPersona5ArcanaByName(ctx context.Context, arcanaName api.ArcanaName) (arcana api.P5Arcana, err error)
+	GetPersona5ArcanaByUUID(ctx context.Context, arcanaUUID api.ArcanaID) (arcana api.P5Arcana, err error)
 }

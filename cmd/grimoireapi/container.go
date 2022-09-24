@@ -14,11 +14,11 @@ import (
 const DEFAULT_LOG_LEVEL = logrus.InfoLevel
 
 type Container struct {
-	Router              *echo.Echo
-	Logger              *logrus.Logger
-	Context             context.Context
-	Gorm                *gorm.DB
-	PersonaGrimoireImpl databases.PersonaGrimoire
+	Router          *echo.Echo
+	Logger          *logrus.Logger
+	Context         context.Context
+	Gorm            *gorm.DB
+	PersonaGrimoire databases.PersonaGrimoire
 }
 
 func Initialize() *Container {
@@ -28,7 +28,7 @@ func Initialize() *Container {
 		Router:  initializeRouter(),
 		Gorm:    initializeGorm(),
 	}
-	c.PersonaGrimoireImpl = &databases.PersonaGrimoireImpl{
+	c.PersonaGrimoire = &databases.PersonaGrimoireImpl{
 		Gorm:   c.Gorm,
 		Logger: c.Logger,
 	}

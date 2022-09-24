@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
@@ -30,9 +29,4 @@ func main() {
 
 func (c *Container) RegisterComponents() {
 	databases.RegisterDatabaseComponents(c.Gorm, c.Logger)
-}
-
-func (c *Container) Foo(ctx context.Context, request api.FooRequestObject) (api.FooResponseObject, error) {
-	c.Logger.Info("Log Foo")
-	return nil, nil
 }
