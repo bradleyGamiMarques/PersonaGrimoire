@@ -1,4 +1,4 @@
-package grimoire
+package databases
 
 import (
 	"github.com/bradleyGamiMarques/PersonaGrimoire/api"
