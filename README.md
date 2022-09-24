@@ -66,6 +66,16 @@
 4. In another terminal run docker-compose -f docker-compose.yaml up.
 
    This will pull the Postgres image down and start the container.
+   
+## Usage
+1. Use a HTTP client, such as Postman, to make requests to the API.
+2. Routes are found in openapi.yaml
+3. Make a request `http://localhost:5000/grimoire/v1/p5/arcana/name/Fool`
+4. Example response:
+
+
+![example](https://user-images.githubusercontent.com/18665288/192122219-60caa118-8380-472f-a9cf-f9c854667223.png)
+
 
 ## Contributing to the project
 Notice something? Say something by [filing an issue](https://github.com/bradleyGamiMarques/PersonaGrimoire/issues/new).
