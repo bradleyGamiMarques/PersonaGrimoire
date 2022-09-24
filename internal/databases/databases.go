@@ -7,6 +7,10 @@ import (
 )
 
 func RegisterDatabaseComponents(gorm *gorm.DB, logger *logrus.Logger) {
+	err := gorm.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
+	if err.Error != nil {
+		logger.Panicf("Error adding extension: %v", err.Error.Error())
+	}
 	migrationError := gorm.AutoMigrate(&api.P5Arcana{})
 	if migrationError != nil {
 		logger.Panicf("gorm Migration Error for Arcana: %v", migrationError)

@@ -127,7 +127,7 @@ components:
     ####################
     P5Persona:
       x-oapi-codegen-extra-tags:
-        gorm: "foreign_key:ArcanaID;references:Arcana"
+        gorm: "foreignKey:ArcanaID;references:Arcana"
       type: object
       required:
         - PersonaID
@@ -146,7 +146,7 @@ components:
         Level:
           $ref: "#/components/schemas/Level"
         Arcana:
-          $ref: "#/components/schemas/P5Arcana"
+          $ref: "#/components/schemas/ArcanaID"
         IsDLC:
           $ref: "#/components/schemas/IsDLC"
         IsTreasureDemon:
@@ -192,7 +192,7 @@ components:
           x-go-type-import:
             path: github.com/google/uuid
           x-oapi-codegen-extra-tags:
-            gorm: "type:char(36);primary_key"
+            gorm: "type:uuid;primaryKey"
         Strength:
           $ref: "#/components/schemas/Strength"
         Magic:
@@ -249,7 +249,7 @@ components:
       x-go-type-import:
         path: github.com/google/uuid
       x-oapi-codegen-extra-tags:
-        gorm: "type:char(36);primary_key"
+        gorm: "type:uuid;primaryKey"
     ArcanaName:
       description: The name of the Major Arcana.
       type: string
@@ -273,7 +273,7 @@ components:
       x-go-type-import:
         path: github.com/google/uuid
       x-oapi-codegen-extra-tags:
-        gorm: "type:char(36);primary_key"
+        gorm: "type:uuid;primaryKey"
     IsDLC:
       description: Represents if the Persona is only available via Downloadable Content.
       type: boolean
@@ -293,7 +293,7 @@ components:
       x-go-type-import:
         path: github.com/google/uuid
       x-oapi-codegen-extra-tags:
-        gorm: "type:char(36);primary_key"
+        gorm: "type:uuid;primaryKey"
     SkillName:
       description: The in-game name for the skill.
       type: string

@@ -7,7 +7,7 @@ import (
 	"github.com/bradleyGamiMarques/PersonaGrimoire/internal/databases"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -44,12 +44,12 @@ func initalizeLogger() *logrus.Logger {
 	return logger
 }
 func initializeGorm() *gorm.DB {
-	dsn := "root:password@tcp(127.0.0.1:3306)/db?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+	dsn := "host=localhost user=postgres password=postgres dbname=persona_grimoire_db port=5432 sslmode=disable TimeZone=America/Los_Angeles"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		PrepareStmt: true,
 	})
 	if err != nil {
-		panic("Failed to connect to the MySQL database" + err.Error())
+		panic("Failed to connect to the Postgres database" + err.Error())
 	}
 	return db
 }

@@ -71,7 +71,7 @@ type Magic = int
 // P5Arcana defines model for P5Arcana.
 type P5Arcana struct {
 	// ArcanaID A universally unique identifier for identifying one of the 22 Major Arcana.
-	ArcanaID ArcanaID `gorm:"type:char(36);primary_key" json:"ArcanaID"`
+	ArcanaID ArcanaID `gorm:"type:uuid;primaryKey" json:"ArcanaID"`
 
 	// ArcanaName The name of the Major Arcana.
 	ArcanaName ArcanaName `json:"ArcanaName"`
@@ -85,7 +85,8 @@ type P5Arcana struct {
 
 // P5Persona defines model for P5Persona.
 type P5Persona struct {
-	Arcana P5Arcana `json:"Arcana"`
+	// Arcana A universally unique identifier for identifying one of the 22 Major Arcana.
+	Arcana ArcanaID `gorm:"type:uuid;primaryKey" json:"Arcana"`
 
 	// CreatedAt Represents when the object was added to the database.
 	CreatedAt CreatedAt `json:"-"`
@@ -100,13 +101,13 @@ type P5Persona struct {
 	Level Level `json:"Level" validate:"min=1,max=99"`
 
 	// P5PersonaID A universally unique identifier for identifying a Persona from Persona 5.
-	P5PersonaID *P5PersonaID `gorm:"type:char(36);primary_key" json:"P5PersonaID,omitempty"`
+	P5PersonaID *P5PersonaID `gorm:"type:uuid;primaryKey" json:"P5PersonaID,omitempty"`
 
 	// PersonaName The name of the Persona.
 	PersonaName *PersonaName `json:"PersonaName,omitempty" validate:"min=1,max=24"`
 
 	// Skill A universally unique identifier for identifying a skill that a Persona 5 Persona can learn.
-	Skill *P5SkillID `gorm:"type:char(36);primary_key" json:"Skill,omitempty"`
+	Skill *P5SkillID `gorm:"type:uuid;primaryKey" json:"Skill,omitempty"`
 
 	// UpdatedAt Represents the last time when the object was updated in the database.
 	UpdatedAt UpdatedAt `json:"-"`
@@ -127,7 +128,7 @@ type P5PersonaSkill struct {
 	SkillEffect *SkillEffect `json:"SkillEffect,omitempty"`
 
 	// SkillID A universally unique identifier for identifying a skill that a Persona 5 Persona can learn.
-	SkillID *P5SkillID `gorm:"type:char(36);primary_key" json:"SkillID,omitempty"`
+	SkillID *P5SkillID `gorm:"type:uuid;primaryKey" json:"SkillID,omitempty"`
 
 	// SkillName The in-game name for the skill.
 	SkillName *SkillName `json:"SkillName,omitempty"`
@@ -151,7 +152,7 @@ type P5PersonaStats struct {
 	Magic Magic `json:"Magic" validate:"min=1,max=99"`
 
 	// StatsID A universally unique identifier for identifying a Persona 5 Persona's stats.
-	StatsID uuid.UUID `gorm:"type:char(36);primary_key" json:"StatsID"`
+	StatsID uuid.UUID `gorm:"type:uuid;primaryKey" json:"StatsID"`
 
 	// Strength An integer that represents the Persona's Strength stat.
 	Strength Strength `json:"Strength" validate:"min=1,max=99"`
@@ -812,38 +813,38 @@ func (sh *strictHandler) GetPersona5ArcanaByName(ctx echo.Context, arcanaName Ar
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/9RZ62/bOBL/Vwa8A+4OkO08mgPWxX5Ik7YIrl0EafNptziMpbHMViK1fCT1Ff7fD0NK",
-	"Mv2I7W0aIP1kWZzHbx6cGVLfRK7rRitSzorxN2HINlpZCn9eYXFDf3qyjv/lWjlS4RGbppI5OqnV6LPV",
-	"it/ZfEY18tPfDU3FWPxttBQ9iqt29NoYbV6hpZtWkVgsFpkoyOZGNixQjMXHmbRATAlxYUIW7mekwM0I",
-	"TIQEufZVAUo7mBBMfTWVVUXFMDDrqSMFM2waUhYmlKO3BHoKCLW0VqqyF9OgwZocmaFYZOKNNhNZFKSe",
-	"k8XekoFCkw3WzvCOoCETDNEKnAbMc7IWEAxZ7U1OwZa35M5NjgpfzW9vry5/mEXXZ1HsNkNuyHmjABVE",
-	"GtCTz5S7gOd99PwHH149JwfnlSTlQNo+O9JEs35pw2/6Yon5YPhu3pAYi+iL7fCW6u7RgvUholNfwcQ7",
-	"MMGrxNkOBTpsobg32qviuTgSoZR3pPochBxVtzsZZwD9gcwdmaDpueC2uiY346BPsGhrBhWgFWhvgFrg",
-	"twq9m2kj/0fFs6sNiqiwXAgmBEuYMKGpNtRWh5jV0qY1YpG1QEO5Py9lJd2cH1cRnCuQylFJBtwMOR0b",
-	"Q5YtCRCuyVit8B8WWglgHbqhyLq8b5lFJr4ONDZykOuCSlID+uoMDhyWQf8dVrJAxxy1VL8eZzV+/fWX",
-	"XwLMWE1iEVsDB17JOzIWq2rOz396AlmQcnIqycBUm+7vnH2gVWgEDPzkBN7jZ23aWpUgts5IVQbApR60",
-	"L72XxTBU0uT9QNaNNiEPGnQzMRaldDM/Gea6HpValxWNmJFzaKf1pTa1GAcA43yG5p+n//7Xy8bIGs38",
-	"v19onrjhN6xp0xFcQxTWvXX7TFtz92lw9/HR7igpX1VLHL6ekNkWEhVWYGp0DUcwgJPjZdLsDkLkcWi0",
-	"gxxNYR+dR0fBsJPj1IG+JoPVNuQ3ukbF+JlgCTrs7g5yizSaPwR2PH2lnIIU7iJM9EbrqqO8n8l8ttbB",
-	"UQFaq3OJjgt7VDiEq9CGer1UwL10M/hDHP0hDohi3DSnBwXxwhDrPnebfrhZ7vC+0sTuFdoTFgUVXG/4",
-	"PTekCVrat32crGn4Uda0L36xhopBCNhrVXiDKqdHlKVexhMUps0SzpXA6IaMk3GMvtAFJVNAp3SRiUt0",
-	"6XzQuq2TmqxMtK4IVZiiyFosaSvbNf9u4VpkgqcLabh3/R7VZhHXUmCntRXzKVsfWzJxZS/fXezMFjlN",
-	"fc+prFU1B7xDWeGkIriTCJf6XlUai/CinaeSqCTGXtmPhtB6Q5dUx876F1QjuJYbCmYfwm1sD1NJVcjf",
-	"jvgMUBXJvxs9x2o7pHd0R9X26lvxUlckOmFh/0ylsQ5I5dorR4aKl+CtDx2r8Bw9mHoe5mMxqVEq4B6A",
-	"uSMDtbdhikIHFaF1sY1HZVKBNgXvAM0iKK61un9spr/z+ZdHbEJmf4L99x5LmT8CVuB/Alz9IWmjHKSj",
-	"zK7hsKfb6Pv7uQLllj59AGek3dYqD2IOxOsFpzdlDdGKYesatxWg67M2cg+59fCz61r/28W0JExr4C6O",
-	"SLS9gO3mWyVP680uvkiUOmh/fqWkzBn/HJJjKSmf6b7IqtqvLZBFXbdNcZjnl4TrKbXEnok2faITujQS",
-	"meAYZGLVo2nYUyAb2XbYuM4HLFkqHtDHXZa/NDQlQyonO+5vSjZC87hTDPb9JczLfef6Cc4wvR/6vFkb",
-	"l75rWwZhF9ru5VoSdlyvp9P2PmovX0vacR6yyZK0D4+HbLAl4fdvlkdk839oPg4Q0kzu7VgJocN4b7xW",
-	"i5c3CTubRku2PubvvDLpCZORZGdpZJp0UNhFHIk4VGzYj92oZ8nUwfOG/Qn26gdnSJWsZk/CdnTrZbrz",
-	"YyKqC0Ua9KxPmTaonx6dwEm5XUnjFlBM42QXPzbMlkXFYXNLzCFHxdO7UT9DhV4dBXZfM22eNRKz/urw",
-	"fPIipl1azDfV55oPQRrieYei6zcBbNb3TVFSDUo2Jllhw+45jL3oeHMTDnLeUgGTeVhrKpyTeVjvw/7r",
-	"tAY/cirtsSLZhd95zOlEPMFJZ6U/PXg6ZzhVOLzKmrZeKvkoh4+0T32txLClmupwVyJdxXK6jfrWyFpL",
-	"Q3B+fSUywTUgGnM8POJgVDKn9ppHhQCLVx8uB6eDiwq9ZRDeVGIsZs41djwa6YZUe9+uTTlque1ohWmR",
-	"CabDRoqxOB0eiSxs8wB7VLaARnfHo+ZshGGiHMli9C0+cq1YhL1NW0Lw9vVHLk4N5XIq8+5CcjIH6ezu",
-	"GseO56Yerj6vCpZFrvXS2cqHRUbbfkS1Yvz7toxnuvD9VSU30pJXQz3LOl8uTRJpI3HGU3bgR5XluXnx",
-	"KVv9oH1ydPQQd083Wv9susjEi6MX+/n673GLTJwdoij9FhYmtpCo3WlZfOJ3D0SfvdXFn8vMd8afxRwU",
-	"5vaEtTfMXWM4LMyt1MeEOQ7JP32gF4v/BwAA//8ix+eBiSEAAA==",
+	"H4sIAAAAAAAC/9RZS3PbOBL+K13YrdoLJdlOfBil5pDYSco1yVTKiU8zObTIJoUMCXDwsKNN6b9vNUBS",
+	"0MOSEse1npNlsrvx9QNfN8BvItdNqxUpZ8X0mzBkW60shX9eYXFNf3uyjv/LtXKkwk9s21rm6KRWky9W",
+	"K35m8zk1yL/+bagUU/Gvycr0JL61k9fGaPMKLV13C4nlcpmJgmxuZMsGxVR8mksLxJIQX8zIwt2cFLg5",
+	"gYmQINe+LkBpBzOC0telrGsqxkFZl44UzLFtSVmYUY7eEugSEBpprVTVYKZFgw05MmOxzMQbbWayKEg9",
+	"JY+9JQOFJhu8neMtQUsmOKIVOA2Y52QtIBiy2pucgi9vyb00OSp8tbi5ubr8aR59OI9mdzlyTc4bBagg",
+	"yoCefaHcBTzvY+Q/+vDoKQU4ryUpB9IO1ZEWmvUrH37XFyvMR8N3i5bEVMRY7Ia3Wu4OLVgfMlr6Gmbe",
+	"gQlRJa52KNBhB8W90V4VTyWQCJW8JTXUIOSo+t3JOAPoj2RuyYSVngpuqxtyc076DIuOM6gArUB7A9QB",
+	"v1Ho3Vwb+V8qnhw3KKLCMhHMCFYwYUalNtSxQ6xqaVOOWGYd0ED3LytZS7fgn+sIXiqQylFFBtwcuRxb",
+	"Q5Y9CRA+kLFa4X8sdBbAOnRjkfV13ymLTHwdaWzlKNcFVaRG9NUZHDmswvq3WMsCHWs0Uv16mjX49ddf",
+	"fgkwI5tEEtsAB17JWzIW63rBv//2BLIg5WQpyUCpTf/vgmOgVWgEDPzsDN7jF206rhoHgJUedbC9l8U4",
+	"MGfyfCSbVpuQ9xbdXExFJd3cz8a5biaV1lVNE1bkmtnrbaVNI6YhRFNWeNEa2aBZ/EaLxOPfsaFtn5ku",
+	"FDaDI5tedA5YZ6SqRLYZ2Wchsqcn+xOifF2vcPhmRmZX9FV4A6XRDZzACM5OV/WxP95Rx6HRDnI0hX1w",
+	"yZwEx85O0wD6hgzWu5Bf6wYV42eBFeiwkXvIHdLo/hg48PSVcgpWuGGw0But617ybi7z+UazRgVorc4l",
+	"OubwuOAYrkLHGdalAu6km8Of4uRPcUQW4/54dlQSLwzx2i/ddhyuV5t5IJXYqEInwqKggqmFn3PvmaGl",
+	"XejSneNkQ+NPsqFD+Yt0KUYhYa9V4Q2qnB7AQIONR+CgbbZmEjC6JeNknJgvdEFJw+8XXWbiEl06CnRh",
+	"660mb2Za14QqDExkLVa0U+0D/92htcwEDxLScJv6Iy6bRVwrg/2qnZnP2eaEkokre/nuYm+1yDKNPZey",
+	"VvUC8BZljbOa4FYiXOo7VWsswoNudEqykjh7ZT8ZQusNXVITm+h3LI3gOm0oWH0MN7ETlJLqUL+98Dmg",
+	"KpL/rvUC692Q3tEt1bvZt+ZXPUn0xsL+KaWxDkjl2itHhooX4K0PzanwnD0oPc/tkUwalAryORrMHRlo",
+	"vA0DEzqoCa2LHTsuJhVoU/AO0GyC4rtu7Z9b6e98/tcDNiGrP8L+e4+VzB8AK+g/Aq7hPLRFB+nUsm8O",
+	"HOS2+v5hrSC5o08foRlld7XKo5SD8CbhDK5sIFpzbHPFXQT04bzL3H1h/Z6grvW/fUorwZQD92lEod0E",
+	"tl9vXTzlm316USgN0OH6SkVZM/5zTI2lonx8+0vW9eHVglhc66Ytjov8SnCzpFbYM9GVTwxCX0YiE5yD",
+	"TKxHNE17CmSr2o6b1PksJSv1Gy2mfWm9MFSSIZWTnQ53IluZedh5BYf2EsbloXE9rdPK4PJQIRuD0Q9t",
+	"wGDsQtuDWivBXut1WXaXTAf1OtFe85jtlBR4+HnMVloJ/vi2eGDdBghp0Q5+rKXQYbwM3mDd1fXAXtrt",
+	"xDYH+r33IINgMnzsJUGWSUeCfcJRiFPFjv3cPXmezBc8WdhDR6P/7zb96Aypilc4UKu93CYX9yFMTPVZ",
+	"SPOdDdXS5fPhnJuQ6loFd4BiBScb+KEZtmwqTpQ70g05Kh7RjXpiPLze2vdfG22fHZKS/d5h+Ox5rLCU",
+	"sreXzzUfajTE8wvFKG8D2GbxbVNSjSp2JnnDjt1xxgbT8SYmHMy8pQJmi/CurXFB5v51749fv2qII1fN",
+	"AS+SDfeDx5bexCOcXNa60L2nbYZTh8OobGjnJZGPdviI+tjXRAxbqlKHuw/parbT78m3RjZaGoKXH65E",
+	"Jni7R2dOxyecjFrm1F3bqJBg8erj5ejZ6KJGbxmEN7WYirlzrZ1OJrol1V2Va1NNOm07WVNaZoLlsJVi",
+	"Kp6NT0QWdniAPak6QJPb00l7PsEwIk5kMfkWfzJNLMO2ph0pePv6E/NQS7ksZd5fMM4WIJ3dT2cceG7d",
+	"4SrzqmBb5Loona99E2S03fdPK6Z/7Kp4lgufTlVywyz5baCyrI/lyiWR9gxnPGVHfg9ZHdmWn7P1b9Fn",
+	"Jyf3aQ9yk80vnstMPD95flhv+JS2zMT5MQuln7HCXBYKtT/9is/87J7sc7T6/DPN/GD+2cxRae5OTAfT",
+	"3DeG49LcWX1ImuMo/I9P9HL5vwAAAP//iBUBfUQhAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
