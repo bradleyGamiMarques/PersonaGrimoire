@@ -26,6 +26,12 @@
   ### Echo
    * High performance web framework for Go. Minimal configuration required to get a server ready.
 
+  ### PostgreSQL
+  * Currently using this at Streemtech and its robust feature set supports the data types I wish to use.
+
+  ### GORM
+  * Another case of using this at Streemtech. It allows me to programatically map my objects to tables thereby reducing the mental load for creating and managing my databases.
+
 * Why build this project?
   * I already have a project called [PersonaCompendium](https://github.com/bradleyGamiMarques/PersonaCompendium).
   * I decided to revisit this idea in Go because I want to have a project to show to potential employers who are looking for Go developers.
@@ -56,6 +62,10 @@
     `make build` - Builds the executable.
 
     `make run` - Runs the executable. Starts the server on PORT 5000.
+    
+4. In another terminal run docker-compose -f docker-compose.yaml up.
+
+   This will pull the Postgres image down and start the container.
 
 ## Contributing to the project
 Notice something? Say something by [filing an issue](https://github.com/bradleyGamiMarques/PersonaGrimoire/issues/new).
