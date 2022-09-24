@@ -7,5 +7,5 @@ import (
 )
 
 type PersonaGrimoire interface {
-	CheckIfArcanaExists(ctx context.Context, arcanaID uuid.UUID) (exists bool, err error)
+	CheckIfArcanaExistsByUUID(ctx context.Context, arcanaID uuid.UUID) (exists bool, err error)
 }
