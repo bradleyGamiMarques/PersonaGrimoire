@@ -46,5 +46,12 @@ func (p *PersonaGrimoireImpl) GetPersona5ArcanaByName(ctx context.Context, arcan
 }
 
 func (p *PersonaGrimoireImpl) GetPersona5ArcanaByUUID(ctx context.Context, arcanaUUID api.ArcanaID) (arcana api.P5Arcana, err error) {
-	return api.P5Arcana{}, fmt.Errorf("NOT IMPLEMENTED")
+	err = p.Gorm.WithContext(ctx).Model(&api.P5Arcana{ArcanaID: arcana.ArcanaID, ArcanaName: arcana.ArcanaName, ArcanaNumber: arcana.ArcanaNumber, ArcanaNumeral: arcana.ArcanaNumeral}).Where(&api.P5Arcana{ArcanaID: arcanaUUID}).First(&arcana).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			p.Logger.Warnf("Attempted to get Persona 5 Arcana by ID that does not exist. Error: %s", err.Error())
+			return api.P5Arcana{}, fmt.Errorf("attempted to get Persona 5 Arcana by ID that does not exist Error: %w", err)
+		}
+	}
+	return arcana, nil
 }
