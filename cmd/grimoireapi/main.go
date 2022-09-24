@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/bradleyGamiMarques/PersonaGrimoire/api"
-	grimoire "github.com/bradleyGamiMarques/PersonaGrimoire/cmd"
+	"github.com/bradleyGamiMarques/PersonaGrimoire/internal/databases"
 )
 
 const DEFAULT_SERVER_PORT = 5000
@@ -30,7 +30,7 @@ func main() {
 }
 
 func (c *Container) RegisterComponents() {
-	grimoire.RegisterDatabaseComponents(c.Gorm, c.Logger)
+	databases.RegisterDatabaseComponents(c.Gorm, c.Logger)
 }
 
 func (c *Container) Foo(ctx context.Context, request api.FooRequestObject) (api.FooResponseObject, error) {
