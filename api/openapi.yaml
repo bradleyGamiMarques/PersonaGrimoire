@@ -188,9 +188,8 @@ components:
         StatsID:
           description: A universally unique identifier for identifying a Persona 5 Persona's stats.
           type: string
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/google/uuid
+          format: uuid
+          pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
           x-oapi-codegen-extra-tags:
             gorm: "type:uuid;primaryKey"
         Strength:
@@ -234,7 +233,7 @@ components:
       description: The level of the Persona when first encountered; usually during fusion. The main character must be at least this level in order to fuse this Persona.
       type: integer
       x-oapi-codegen-extra-tags:
-        validate: "min=1,max=99"
+        validate: "minimum=1,maximum=99"
     UpdatedAt:
       description: Represents the last time when the object was updated in the database.
       type: string
@@ -245,33 +244,31 @@ components:
     ArcanaID:
       description: A universally unique identifier for identifying one of the 22 Major Arcana.
       type: string
-      x-go-type: uuid.UUID
-      x-go-type-import:
-        path: github.com/google/uuid
+      format: uuid
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
       x-oapi-codegen-extra-tags:
         gorm: "type:uuid;primaryKey"
     ArcanaName:
       description: The name of the Major Arcana.
       type: string
       x-oapi-codegen-extra-tags:
-      validate: "min=3,max=10"
+      validate: "minLength=3,maxLength=10"
     ArcanaNumber:
       description: A number from 0 - 21 representing one of the 22 Major Arcana from tarot cards.
       type: integer
       x-oapi-codegen-extra-tags:
-        validate: "min=0,max=21"
+        validate: "minimum=0,maximum=21"
     ArcanaNumeral:
       description: A Roman numeral representation of the Arcana Number. The exeception is the Fool Arcana which does not have an associated numeral. It is represented with "0".
       type: string
       x-oapi-codegen-extra-tags:
-      validate: "min=1,max=3"
+      validate: "minimum=1,maximum=5"
     # P5 Personas
     P5PersonaID:
       description: A universally unique identifier for identifying a Persona from Persona 5.
       type: string
-      x-go-type: uuid.UUID
-      x-go-type-import:
-        path: github.com/google/uuid
+      format: uuid
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
       x-oapi-codegen-extra-tags:
         gorm: "type:uuid;primaryKey"
     IsDLC:
@@ -284,14 +281,13 @@ components:
       description: The name of the Persona.
       type: string
       x-oapi-codegen-extra-tags:
-        validate: "min=1,max=24"
+        validate: "minimum=1,maximum=24"
     # P5 Skills
     P5SkillID:
       description: A universally unique identifier for identifying a skill that a Persona 5 Persona can learn.
       type: string
-      x-go-type: uuid.UUID
-      x-go-type-import:
-        path: github.com/google/uuid
+      format: uuid
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
       x-oapi-codegen-extra-tags:
         gorm: "type:uuid;primaryKey"
     SkillName:
@@ -308,24 +304,24 @@ components:
       description: An integer that represents the Persona's Strength stat.
       type: integer
       x-oapi-codegen-extra-tags:
-        validate: "min=1,max=99"
+        validate: "minimum=1,maximum=99"
     Magic:
       description: An integer that represents the Persona's Magic stat.
       type: integer
       x-oapi-codegen-extra-tags:
-        validate: "min=1,max=99"
+        validate: "minimum=1,maximum=99"
     Endurance:
       description: An integer that represents the Persona's Endurance stat.
       type: integer
       x-oapi-codegen-extra-tags:
-        validate: "min=1,max=99"
+        validate: "minimum=1,maximum=99"
     Agility:
       description: An integer that represents the Persona's Agility stat.
       type: integer
       x-oapi-codegen-extra-tags:
-        validate: "min=1,max=99"
+        validate: "minimum=1,maximum=99"
     Luck:
       description: An integer that represents the Persona's Luck stat.
       type: integer
       x-oapi-codegen-extra-tags:
-        validate: "min=1,max=99"
+        validate: "minimum=1,maximum=99"
