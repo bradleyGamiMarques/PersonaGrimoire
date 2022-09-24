@@ -5,6 +5,7 @@ go 1.18
 replace github.com/deepmap/oapi-codegen v1.11.0 => github.com/deepmap/oapi-codegen v0.0.0-20220906181851-9c600dddea33
 
 require (
+	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/deepmap/oapi-codegen v1.11.0 // indirect
 	github.com/getkin/kin-openapi v0.94.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
