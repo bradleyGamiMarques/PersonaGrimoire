@@ -2,6 +2,7 @@ package databases
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/bradleyGamiMarques/PersonaGrimoire/api"
@@ -21,7 +22,7 @@ func (p *PersonaGrimoireImpl) CheckIfArcanaExistsByUUID(ctx context.Context, arc
 	if err != nil {
 		return false, fmt.Errorf("failed to count arcanas Error: %w", err)
 	}
-	return count > 0, fmt.Errorf("NOT IMPLEMENTED")
+	return count > 0, nil
 }
 func (p *PersonaGrimoireImpl) CheckIfArcanaExistsByName(ctx context.Context, arcanaName api.ArcanaName) (exists bool, err error) {
 	var count int64
@@ -29,12 +30,19 @@ func (p *PersonaGrimoireImpl) CheckIfArcanaExistsByName(ctx context.Context, arc
 	if err != nil {
 		return false, fmt.Errorf("failed to count arcanas Error: %w", err)
 	}
-	return count > 0, fmt.Errorf("NOT IMPLEMENTED")
+	return count > 0, nil
 }
 
 // CRUDs relating to Persona 5 Arcanas
 func (p *PersonaGrimoireImpl) GetPersona5ArcanaByName(ctx context.Context, arcanaName api.ArcanaName) (arcana api.P5Arcana, err error) {
-	return api.P5Arcana{}, fmt.Errorf("NOT IMPLEMENTED")
+	err = p.Gorm.WithContext(ctx).Model(&api.P5Arcana{ArcanaID: arcana.ArcanaID, ArcanaName: arcana.ArcanaName, ArcanaNumber: arcana.ArcanaNumber, ArcanaNumeral: arcana.ArcanaNumeral}).Where(&api.P5Arcana{ArcanaName: arcanaName}).First(&arcana).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			p.Logger.Warnf("Attempted to get Persona 5 Arcana by name that does not exist. Error: %s", err.Error())
+			return api.P5Arcana{}, fmt.Errorf("attempted to get Persona 5 Arcana by name that does not exist Error: %w", err)
+		}
+	}
+	return arcana, nil
 }
 
 func (p *PersonaGrimoireImpl) GetPersona5ArcanaByUUID(ctx context.Context, arcanaUUID api.ArcanaID) (arcana api.P5Arcana, err error) {
