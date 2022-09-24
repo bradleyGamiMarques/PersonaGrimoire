@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/bradleyGamiMarques/PersonaGrimoire/internal/databases"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
@@ -13,10 +14,11 @@ import (
 const DEFAULT_LOG_LEVEL = logrus.InfoLevel
 
 type Container struct {
-	Router  *echo.Echo
-	Logger  *logrus.Logger
-	Context context.Context
-	Gorm    *gorm.DB
+	Router              *echo.Echo
+	Logger              *logrus.Logger
+	Context             context.Context
+	Gorm                *gorm.DB
+	PersonaGrimoireImpl databases.PersonaGrimoire
 }
 
 func Initialize() *Container {
@@ -25,6 +27,10 @@ func Initialize() *Container {
 		Logger:  initalizeLogger(),
 		Router:  initializeRouter(),
 		Gorm:    initializeGorm(),
+	}
+	c.PersonaGrimoireImpl = &databases.PersonaGrimoireImpl{
+		Gorm:   c.Gorm,
+		Logger: c.Logger,
 	}
 	return c
 }

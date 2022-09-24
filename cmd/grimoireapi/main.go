@@ -18,7 +18,6 @@ func main() {
 
 	handler := api.NewStrictHandler(c, nil)
 	api.RegisterHandlers(c.Router, handler)
-
 	c.Logger.Infof("Starting server on port:%d", DEFAULT_SERVER_PORT)
 	err := c.Router.Start(fmt.Sprintf(":%d", DEFAULT_SERVER_PORT))
 	if err == http.ErrServerClosed {
