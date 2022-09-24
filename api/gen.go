@@ -18,8 +18,8 @@ import (
 	"time"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
+	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -27,7 +27,7 @@ import (
 type Agility = int
 
 // ArcanaID A universally unique identifier for identifying one of the 22 Major Arcana.
-type ArcanaID uuid.UUID
+type ArcanaID = openapi_types.UUID
 
 // ArcanaName The name of the Major Arcana.
 type ArcanaName = string
@@ -77,7 +77,7 @@ type P5Arcana struct {
 	ArcanaName ArcanaName `json:"ArcanaName"`
 
 	// ArcanaNumber A number from 0 - 21 representing one of the 22 Major Arcana from tarot cards.
-	ArcanaNumber ArcanaNumber `json:"ArcanaNumber" validate:"min=0,max=21"`
+	ArcanaNumber ArcanaNumber `json:"ArcanaNumber" validate:"minimum=0,maximum=21"`
 
 	// ArcanaNumeral A Roman numeral representation of the Arcana Number. The exeception is the Fool Arcana which does not have an associated numeral. It is represented with "0".
 	ArcanaNumeral ArcanaNumeral `json:"ArcanaNumeral"`
@@ -98,13 +98,13 @@ type P5Persona struct {
 	IsTreasureDemon *IsTreasureDemon `json:"IsTreasureDemon,omitempty"`
 
 	// Level The level of the Persona when first encountered; usually during fusion. The main character must be at least this level in order to fuse this Persona.
-	Level Level `json:"Level" validate:"min=1,max=99"`
+	Level Level `json:"Level" validate:"minimum=1,maximum=99"`
 
 	// P5PersonaID A universally unique identifier for identifying a Persona from Persona 5.
 	P5PersonaID *P5PersonaID `gorm:"type:uuid;primaryKey" json:"P5PersonaID,omitempty"`
 
 	// PersonaName The name of the Persona.
-	PersonaName *PersonaName `json:"PersonaName,omitempty" validate:"min=1,max=24"`
+	PersonaName *PersonaName `json:"PersonaName,omitempty" validate:"minimum=1,maximum=24"`
 
 	// Skill A universally unique identifier for identifying a skill that a Persona 5 Persona can learn.
 	Skill *P5SkillID `gorm:"type:uuid;primaryKey" json:"Skill,omitempty"`
@@ -114,7 +114,7 @@ type P5Persona struct {
 }
 
 // P5PersonaID A universally unique identifier for identifying a Persona from Persona 5.
-type P5PersonaID uuid.UUID
+type P5PersonaID = openapi_types.UUID
 
 // P5PersonaSkill defines model for P5PersonaSkill.
 type P5PersonaSkill struct {
@@ -140,26 +140,26 @@ type P5PersonaSkill struct {
 // P5PersonaStats defines model for P5PersonaStats.
 type P5PersonaStats struct {
 	// Agility An integer that represents the Persona's Agility stat.
-	Agility Agility `json:"Agility" validate:"min=1,max=99"`
+	Agility Agility `json:"Agility" validate:"minimum=1,maximum=99"`
 
 	// Endurance An integer that represents the Persona's Endurance stat.
-	Endurance Endurance `json:"Endurance" validate:"min=1,max=99"`
+	Endurance Endurance `json:"Endurance" validate:"minimum=1,maximum=99"`
 
 	// Luck An integer that represents the Persona's Luck stat.
-	Luck Luck `json:"Luck" validate:"min=1,max=99"`
+	Luck Luck `json:"Luck" validate:"minimum=1,maximum=99"`
 
 	// Magic An integer that represents the Persona's Magic stat.
-	Magic Magic `json:"Magic" validate:"min=1,max=99"`
+	Magic Magic `json:"Magic" validate:"minimum=1,maximum=99"`
 
 	// StatsID A universally unique identifier for identifying a Persona 5 Persona's stats.
-	StatsID uuid.UUID `gorm:"type:uuid;primaryKey" json:"StatsID"`
+	StatsID openapi_types.UUID `gorm:"type:uuid;primaryKey" json:"StatsID"`
 
 	// Strength An integer that represents the Persona's Strength stat.
-	Strength Strength `json:"Strength" validate:"min=1,max=99"`
+	Strength Strength `json:"Strength" validate:"minimum=1,maximum=99"`
 }
 
 // P5SkillID A universally unique identifier for identifying a skill that a Persona 5 Persona can learn.
-type P5SkillID uuid.UUID
+type P5SkillID = openapi_types.UUID
 
 // PersonaName The name of the Persona.
 type PersonaName = string
@@ -813,38 +813,39 @@ func (sh *strictHandler) GetPersona5ArcanaByName(ctx echo.Context, arcanaName Ar
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/9RZS3PbOBL+K13YrdoLJdlOfBil5pDYSco1yVTKiU8zObTIJoUMCXDwsKNN6b9vNUBS",
-	"0MOSEse1npNlsrvx9QNfN8BvItdNqxUpZ8X0mzBkW60shX9eYXFNf3uyjv/LtXKkwk9s21rm6KRWky9W",
-	"K35m8zk1yL/+bagUU/Gvycr0JL61k9fGaPMKLV13C4nlcpmJgmxuZMsGxVR8mksLxJIQX8zIwt2cFLg5",
-	"gYmQINe+LkBpBzOC0telrGsqxkFZl44UzLFtSVmYUY7eEugSEBpprVTVYKZFgw05MmOxzMQbbWayKEg9",
-	"JY+9JQOFJhu8neMtQUsmOKIVOA2Y52QtIBiy2pucgi9vyb00OSp8tbi5ubr8aR59OI9mdzlyTc4bBagg",
-	"yoCefaHcBTzvY+Q/+vDoKQU4ryUpB9IO1ZEWmvUrH37XFyvMR8N3i5bEVMRY7Ia3Wu4OLVgfMlr6Gmbe",
-	"gQlRJa52KNBhB8W90V4VTyWQCJW8JTXUIOSo+t3JOAPoj2RuyYSVngpuqxtyc076DIuOM6gArUB7A9QB",
-	"v1Ho3Vwb+V8qnhw3KKLCMhHMCFYwYUalNtSxQ6xqaVOOWGYd0ED3LytZS7fgn+sIXiqQylFFBtwcuRxb",
-	"Q5Y9CRA+kLFa4X8sdBbAOnRjkfV13ymLTHwdaWzlKNcFVaRG9NUZHDmswvq3WMsCHWs0Uv16mjX49ddf",
-	"fgkwI5tEEtsAB17JWzIW63rBv//2BLIg5WQpyUCpTf/vgmOgVWgEDPzsDN7jF206rhoHgJUedbC9l8U4",
-	"MGfyfCSbVpuQ9xbdXExFJd3cz8a5biaV1lVNE1bkmtnrbaVNI6YhRFNWeNEa2aBZ/EaLxOPfsaFtn5ku",
-	"FDaDI5tedA5YZ6SqRLYZ2Wchsqcn+xOifF2vcPhmRmZX9FV4A6XRDZzACM5OV/WxP95Rx6HRDnI0hX1w",
-	"yZwEx85O0wD6hgzWu5Bf6wYV42eBFeiwkXvIHdLo/hg48PSVcgpWuGGw0But617ybi7z+UazRgVorc4l",
-	"OubwuOAYrkLHGdalAu6km8Of4uRPcUQW4/54dlQSLwzx2i/ddhyuV5t5IJXYqEInwqKggqmFn3PvmaGl",
-	"XejSneNkQ+NPsqFD+Yt0KUYhYa9V4Q2qnB7AQIONR+CgbbZmEjC6JeNknJgvdEFJw+8XXWbiEl06CnRh",
-	"660mb2Za14QqDExkLVa0U+0D/92htcwEDxLScJv6Iy6bRVwrg/2qnZnP2eaEkokre/nuYm+1yDKNPZey",
-	"VvUC8BZljbOa4FYiXOo7VWsswoNudEqykjh7ZT8ZQusNXVITm+h3LI3gOm0oWH0MN7ETlJLqUL+98Dmg",
-	"KpL/rvUC692Q3tEt1bvZt+ZXPUn0xsL+KaWxDkjl2itHhooX4K0PzanwnD0oPc/tkUwalAryORrMHRlo",
-	"vA0DEzqoCa2LHTsuJhVoU/AO0GyC4rtu7Z9b6e98/tcDNiGrP8L+e4+VzB8AK+g/Aq7hPLRFB+nUsm8O",
-	"HOS2+v5hrSC5o08foRlld7XKo5SD8CbhDK5sIFpzbHPFXQT04bzL3H1h/Z6grvW/fUorwZQD92lEod0E",
-	"tl9vXTzlm316USgN0OH6SkVZM/5zTI2lonx8+0vW9eHVglhc66Ytjov8SnCzpFbYM9GVTwxCX0YiE5yD",
-	"TKxHNE17CmSr2o6b1PksJSv1Gy2mfWm9MFSSIZWTnQ53IluZedh5BYf2EsbloXE9rdPK4PJQIRuD0Q9t",
-	"wGDsQtuDWivBXut1WXaXTAf1OtFe85jtlBR4+HnMVloJ/vi2eGDdBghp0Q5+rKXQYbwM3mDd1fXAXtrt",
-	"xDYH+r33IINgMnzsJUGWSUeCfcJRiFPFjv3cPXmezBc8WdhDR6P/7zb96Aypilc4UKu93CYX9yFMTPVZ",
-	"SPOdDdXS5fPhnJuQ6loFd4BiBScb+KEZtmwqTpQ70g05Kh7RjXpiPLze2vdfG22fHZKS/d5h+Ox5rLCU",
-	"sreXzzUfajTE8wvFKG8D2GbxbVNSjSp2JnnDjt1xxgbT8SYmHMy8pQJmi/CurXFB5v51749fv2qII1fN",
-	"AS+SDfeDx5bexCOcXNa60L2nbYZTh8OobGjnJZGPdviI+tjXRAxbqlKHuw/parbT78m3RjZaGoKXH65E",
-	"Jni7R2dOxyecjFrm1F3bqJBg8erj5ejZ6KJGbxmEN7WYirlzrZ1OJrol1V2Va1NNOm07WVNaZoLlsJVi",
-	"Kp6NT0QWdniAPak6QJPb00l7PsEwIk5kMfkWfzJNLMO2ph0pePv6E/NQS7ksZd5fMM4WIJ3dT2cceG7d",
-	"4SrzqmBb5Loona99E2S03fdPK6Z/7Kp4lgufTlVywyz5baCyrI/lyiWR9gxnPGVHfg9ZHdmWn7P1b9Fn",
-	"Jyf3aQ9yk80vnstMPD95flhv+JS2zMT5MQuln7HCXBYKtT/9is/87J7sc7T6/DPN/GD+2cxRae5OTAfT",
-	"3DeG49LcWX1ImuMo/I9P9HL5vwAAAP//iBUBfUQhAAA=",
+	"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",
+	"AA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
