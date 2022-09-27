@@ -23,7 +23,7 @@ paths:
             $ref: "#/components/schemas/ArcanaID"
       responses:
         200:
-          $ref: "#/components/responses/GetArcanaByUUID"
+          $ref: "#/components/responses/GetArcana"
         404:
           $ref: "#/components/responses/NotFound"
         500:
@@ -43,21 +43,55 @@ paths:
             $ref: "#/components/schemas/ArcanaName"
       responses:
         200:
-          $ref: "#/components/responses/GetArcanaByUUID"
+          $ref: "#/components/responses/GetArcana"
         404:
           $ref: "#/components/responses/NotFound"
+        500:
+          $ref: "#/components/responses/ServerError"
+  /grimoire/v1/p5/arcana/all:
+    get:
+      operationId: getAllPersona5Arcanas
+      tags:
+        - Arcana
+      description: Get all Arcanas from Persona 5.
+      parameters:
+        - name: limit
+          in: query
+          description: The maximum number of records to return.
+          required: false
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: The number of records to skip.
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          $ref: "#/components/responses/GetAllPersona5Arcanas"
+        400:
+          $ref: "#/components/responses/BadRequest"
         500:
           $ref: "#/components/responses/ServerError"
 components:
   responses:
     # Arcana
     # GET Responses
-    GetArcanaByUUID:
+    GetArcana:
       description: Return an Arcana object.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/P5Arcana"
+            $ref: "#/components/schemas/P5ArcanaResponse"
+    GetAllPersona5Arcanas:
+      description: Return an array of Arcana objects.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/P5ArcanaResponse"
     NoContent:
       description: The request was successful but returned no data.
       content:
@@ -167,6 +201,19 @@ components:
       properties:
         ArcanaID:
           $ref: "#/components/schemas/ArcanaID"
+        ArcanaNumber:
+          $ref: "#/components/schemas/ArcanaNumber"
+        ArcanaName:
+          $ref: "#/components/schemas/ArcanaName"
+        ArcanaNumeral:
+          $ref: "#/components/schemas/ArcanaNumeral"
+    P5ArcanaResponse:
+      type: object
+      required:
+        - ArcanaNumber
+        - ArcanaName
+        - ArcanaNumeral
+      properties:
         ArcanaNumber:
           $ref: "#/components/schemas/ArcanaNumber"
         ArcanaName:
