@@ -34,23 +34,27 @@ func (p *PersonaGrimoireImpl) CheckIfArcanaExistsByName(ctx context.Context, arc
 }
 
 // CRUDs relating to Persona 5 Arcanas
-func (p *PersonaGrimoireImpl) GetPersona5ArcanaByName(ctx context.Context, arcanaName api.ArcanaName) (arcana api.P5Arcana, err error) {
-	err = p.Gorm.WithContext(ctx).Model(&api.P5Arcana{ArcanaID: arcana.ArcanaID, ArcanaName: arcana.ArcanaName, ArcanaNumber: arcana.ArcanaNumber, ArcanaNumeral: arcana.ArcanaNumeral}).Where(&api.P5Arcana{ArcanaName: arcanaName}).First(&arcana).Error
+func (p *PersonaGrimoireImpl) GetAllPersona5Arcanas(ctx context.Context, limit, offset int) (arcanas []api.P5ArcanaResponse, err error) {
+	p.Gorm.Model(api.P5Arcana{}).WithContext(ctx).Limit(limit).Offset(offset).Select("ArcanaName", "ArcanaNumber", "ArcanaNumeral").Find(&arcanas)
+	return arcanas, nil
+}
+func (p *PersonaGrimoireImpl) GetPersona5ArcanaByName(ctx context.Context, arcanaName api.ArcanaName) (arcana api.P5ArcanaResponse, err error) {
+	err = p.Gorm.WithContext(ctx).Model(&api.P5Arcana{}).Where(&api.P5Arcana{ArcanaName: arcanaName}).Select("ArcanaName", "ArcanaNumber", "ArcanaNumeral").First(&arcana).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			p.Logger.Warnf("Attempted to get Persona 5 Arcana by name that does not exist. Error: %s", err.Error())
-			return api.P5Arcana{}, fmt.Errorf("attempted to get Persona 5 Arcana by name that does not exist Error: %w", err)
+			return api.P5ArcanaResponse{}, fmt.Errorf("attempted to get Persona 5 Arcana by name that does not exist Error: %w", err)
 		}
 	}
 	return arcana, nil
 }
 
-func (p *PersonaGrimoireImpl) GetPersona5ArcanaByUUID(ctx context.Context, arcanaUUID api.ArcanaID) (arcana api.P5Arcana, err error) {
-	err = p.Gorm.WithContext(ctx).Model(&api.P5Arcana{ArcanaID: arcana.ArcanaID, ArcanaName: arcana.ArcanaName, ArcanaNumber: arcana.ArcanaNumber, ArcanaNumeral: arcana.ArcanaNumeral}).Where(&api.P5Arcana{ArcanaID: arcanaUUID}).First(&arcana).Error
+func (p *PersonaGrimoireImpl) GetPersona5ArcanaByUUID(ctx context.Context, arcanaUUID api.ArcanaID) (arcana api.P5ArcanaResponse, err error) {
+	err = p.Gorm.WithContext(ctx).Model(&api.P5Arcana{}).Where(&api.P5Arcana{ArcanaID: arcanaUUID}).Select("ArcanaName", "ArcanaNumber", "ArcanaNumeral").First(&arcana).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			p.Logger.Warnf("Attempted to get Persona 5 Arcana by ID that does not exist. Error: %s", err.Error())
-			return api.P5Arcana{}, fmt.Errorf("attempted to get Persona 5 Arcana by ID that does not exist Error: %w", err)
+			return api.P5ArcanaResponse{}, fmt.Errorf("attempted to get Persona 5 Arcana by ID that does not exist Error: %w", err)
 		}
 	}
 	return arcana, nil
