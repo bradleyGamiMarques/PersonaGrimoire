@@ -83,6 +83,18 @@ type P5Arcana struct {
 	ArcanaNumeral ArcanaNumeral `json:"ArcanaNumeral"`
 }
 
+// P5ArcanaResponse defines model for P5ArcanaResponse.
+type P5ArcanaResponse struct {
+	// ArcanaName The name of the Major Arcana.
+	ArcanaName ArcanaName `json:"ArcanaName"`
+
+	// ArcanaNumber A number from 0 - 21 representing one of the 22 Major Arcana from tarot cards.
+	ArcanaNumber ArcanaNumber `json:"ArcanaNumber" validate:"minimum=0,maximum=21"`
+
+	// ArcanaNumeral A Roman numeral representation of the Arcana Number. The exeception is the Fool Arcana which does not have an associated numeral. It is represented with "0".
+	ArcanaNumeral ArcanaNumeral `json:"ArcanaNumeral"`
+}
+
 // P5Persona defines model for P5Persona.
 type P5Persona struct {
 	// Arcana A universally unique identifier for identifying one of the 22 Major Arcana.
@@ -185,8 +197,11 @@ type BadRequest = ErrorBaseResponse
 // Forbidden defines model for Forbidden.
 type Forbidden = ErrorBaseResponse
 
-// GetArcanaByUUID defines model for GetArcanaByUUID.
-type GetArcanaByUUID = P5Arcana
+// GetAllPersona5Arcanas defines model for GetAllPersona5Arcanas.
+type GetAllPersona5Arcanas = []P5ArcanaResponse
+
+// GetArcana defines model for GetArcana.
+type GetArcana = P5ArcanaResponse
 
 // MissingSubject defines model for MissingSubject.
 type MissingSubject = ErrorBaseResponse
@@ -202,6 +217,15 @@ type ServerError = ErrorBaseResponse
 
 // Unauthorized defines model for Unauthorized.
 type Unauthorized = ErrorBaseResponse
+
+// GetAllPersona5ArcanasParams defines parameters for GetAllPersona5Arcanas.
+type GetAllPersona5ArcanasParams struct {
+	// Limit The maximum number of records to return.
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset The number of records to skip.
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+}
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -276,11 +300,26 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// GetAllPersona5Arcanas request
+	GetAllPersona5Arcanas(ctx context.Context, params *GetAllPersona5ArcanasParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetPersona5ArcanaByUUID request
 	GetPersona5ArcanaByUUID(ctx context.Context, arcanaUUID ArcanaID, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetPersona5ArcanaByName request
 	GetPersona5ArcanaByName(ctx context.Context, arcanaName ArcanaName, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) GetAllPersona5Arcanas(ctx context.Context, params *GetAllPersona5ArcanasParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAllPersona5ArcanasRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) GetPersona5ArcanaByUUID(ctx context.Context, arcanaUUID ArcanaID, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -305,6 +344,69 @@ func (c *Client) GetPersona5ArcanaByName(ctx context.Context, arcanaName ArcanaN
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewGetAllPersona5ArcanasRequest generates requests for GetAllPersona5Arcanas
+func NewGetAllPersona5ArcanasRequest(server string, params *GetAllPersona5ArcanasParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/grimoire/v1/p5/arcana/all")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if params.Limit != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "limit", runtime.ParamLocationQuery, *params.Limit); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.Offset != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
 
 // NewGetPersona5ArcanaByUUIDRequest generates requests for GetPersona5ArcanaByUUID
@@ -418,6 +520,9 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// GetAllPersona5Arcanas request
+	GetAllPersona5ArcanasWithResponse(ctx context.Context, params *GetAllPersona5ArcanasParams, reqEditors ...RequestEditorFn) (*GetAllPersona5ArcanasResponse, error)
+
 	// GetPersona5ArcanaByUUID request
 	GetPersona5ArcanaByUUIDWithResponse(ctx context.Context, arcanaUUID ArcanaID, reqEditors ...RequestEditorFn) (*GetPersona5ArcanaByUUIDResponse, error)
 
@@ -425,10 +530,34 @@ type ClientWithResponsesInterface interface {
 	GetPersona5ArcanaByNameWithResponse(ctx context.Context, arcanaName ArcanaName, reqEditors ...RequestEditorFn) (*GetPersona5ArcanaByNameResponse, error)
 }
 
+type GetAllPersona5ArcanasResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]P5ArcanaResponse
+	JSON400      *ErrorBaseResponse
+	JSON500      *ErrorBaseResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAllPersona5ArcanasResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAllPersona5ArcanasResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetPersona5ArcanaByUUIDResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *P5Arcana
+	JSON200      *P5ArcanaResponse
 	JSON404      *ErrorBaseResponse
 	JSON500      *ErrorBaseResponse
 }
@@ -452,7 +581,7 @@ func (r GetPersona5ArcanaByUUIDResponse) StatusCode() int {
 type GetPersona5ArcanaByNameResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *P5Arcana
+	JSON200      *P5ArcanaResponse
 	JSON404      *ErrorBaseResponse
 	JSON500      *ErrorBaseResponse
 }
@@ -473,6 +602,15 @@ func (r GetPersona5ArcanaByNameResponse) StatusCode() int {
 	return 0
 }
 
+// GetAllPersona5ArcanasWithResponse request returning *GetAllPersona5ArcanasResponse
+func (c *ClientWithResponses) GetAllPersona5ArcanasWithResponse(ctx context.Context, params *GetAllPersona5ArcanasParams, reqEditors ...RequestEditorFn) (*GetAllPersona5ArcanasResponse, error) {
+	rsp, err := c.GetAllPersona5Arcanas(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAllPersona5ArcanasResponse(rsp)
+}
+
 // GetPersona5ArcanaByUUIDWithResponse request returning *GetPersona5ArcanaByUUIDResponse
 func (c *ClientWithResponses) GetPersona5ArcanaByUUIDWithResponse(ctx context.Context, arcanaUUID ArcanaID, reqEditors ...RequestEditorFn) (*GetPersona5ArcanaByUUIDResponse, error) {
 	rsp, err := c.GetPersona5ArcanaByUUID(ctx, arcanaUUID, reqEditors...)
@@ -491,6 +629,46 @@ func (c *ClientWithResponses) GetPersona5ArcanaByNameWithResponse(ctx context.Co
 	return ParseGetPersona5ArcanaByNameResponse(rsp)
 }
 
+// ParseGetAllPersona5ArcanasResponse parses an HTTP response from a GetAllPersona5ArcanasWithResponse call
+func ParseGetAllPersona5ArcanasResponse(rsp *http.Response) (*GetAllPersona5ArcanasResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAllPersona5ArcanasResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []P5ArcanaResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest ErrorBaseResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest ErrorBaseResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetPersona5ArcanaByUUIDResponse parses an HTTP response from a GetPersona5ArcanaByUUIDWithResponse call
 func ParseGetPersona5ArcanaByUUIDResponse(rsp *http.Response) (*GetPersona5ArcanaByUUIDResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -506,7 +684,7 @@ func ParseGetPersona5ArcanaByUUIDResponse(rsp *http.Response) (*GetPersona5Arcan
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest P5Arcana
+		var dest P5ArcanaResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -546,7 +724,7 @@ func ParseGetPersona5ArcanaByNameResponse(rsp *http.Response) (*GetPersona5Arcan
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest P5Arcana
+		var dest P5ArcanaResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -574,6 +752,9 @@ func ParseGetPersona5ArcanaByNameResponse(rsp *http.Response) (*GetPersona5Arcan
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
+	// (GET /grimoire/v1/p5/arcana/all)
+	GetAllPersona5Arcanas(ctx echo.Context, params GetAllPersona5ArcanasParams) error
+
 	// (GET /grimoire/v1/p5/arcana/id/{arcanaUUID})
 	GetPersona5ArcanaByUUID(ctx echo.Context, arcanaUUID ArcanaID) error
 
@@ -584,6 +765,31 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// GetAllPersona5Arcanas converts echo context to params.
+func (w *ServerInterfaceWrapper) GetAllPersona5Arcanas(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetAllPersona5ArcanasParams
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetAllPersona5Arcanas(ctx, params)
+	return err
 }
 
 // GetPersona5ArcanaByUUID converts echo context to params.
@@ -646,6 +852,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
+	router.GET(baseURL+"/grimoire/v1/p5/arcana/all", wrapper.GetAllPersona5Arcanas)
 	router.GET(baseURL+"/grimoire/v1/p5/arcana/id/:arcanaUUID", wrapper.GetPersona5ArcanaByUUID)
 	router.GET(baseURL+"/grimoire/v1/p5/arcana/name/:arcanaName", wrapper.GetPersona5ArcanaByName)
 
@@ -655,7 +862,9 @@ type BadRequestJSONResponse ErrorBaseResponse
 
 type ForbiddenJSONResponse ErrorBaseResponse
 
-type GetArcanaByUUIDJSONResponse P5Arcana
+type GetAllPersona5ArcanasJSONResponse []P5ArcanaResponse
+
+type GetArcanaJSONResponse P5ArcanaResponse
 
 type MissingSubjectJSONResponse ErrorBaseResponse
 
@@ -667,6 +876,41 @@ type ServerErrorJSONResponse ErrorBaseResponse
 
 type UnauthorizedJSONResponse ErrorBaseResponse
 
+type GetAllPersona5ArcanasRequestObject struct {
+	Params GetAllPersona5ArcanasParams
+}
+
+type GetAllPersona5ArcanasResponseObject interface {
+	VisitGetAllPersona5ArcanasResponse(w http.ResponseWriter) error
+}
+
+type GetAllPersona5Arcanas200JSONResponse = GetAllPersona5ArcanasJSONResponse
+
+func (response GetAllPersona5Arcanas200JSONResponse) VisitGetAllPersona5ArcanasResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAllPersona5Arcanas400JSONResponse = BadRequestJSONResponse
+
+func (response GetAllPersona5Arcanas400JSONResponse) VisitGetAllPersona5ArcanasResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetAllPersona5Arcanas500JSONResponse = ServerErrorJSONResponse
+
+func (response GetAllPersona5Arcanas500JSONResponse) VisitGetAllPersona5ArcanasResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type GetPersona5ArcanaByUUIDRequestObject struct {
 	ArcanaUUID ArcanaID `json:"arcanaUUID"`
 }
@@ -675,7 +919,7 @@ type GetPersona5ArcanaByUUIDResponseObject interface {
 	VisitGetPersona5ArcanaByUUIDResponse(w http.ResponseWriter) error
 }
 
-type GetPersona5ArcanaByUUID200JSONResponse = GetArcanaByUUIDJSONResponse
+type GetPersona5ArcanaByUUID200JSONResponse = GetArcanaJSONResponse
 
 func (response GetPersona5ArcanaByUUID200JSONResponse) VisitGetPersona5ArcanaByUUIDResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -710,7 +954,7 @@ type GetPersona5ArcanaByNameResponseObject interface {
 	VisitGetPersona5ArcanaByNameResponse(w http.ResponseWriter) error
 }
 
-type GetPersona5ArcanaByName200JSONResponse = GetArcanaByUUIDJSONResponse
+type GetPersona5ArcanaByName200JSONResponse = GetArcanaJSONResponse
 
 func (response GetPersona5ArcanaByName200JSONResponse) VisitGetPersona5ArcanaByNameResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -740,6 +984,9 @@ func (response GetPersona5ArcanaByName500JSONResponse) VisitGetPersona5ArcanaByN
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 
+	// (GET /grimoire/v1/p5/arcana/all)
+	GetAllPersona5Arcanas(ctx context.Context, request GetAllPersona5ArcanasRequestObject) (GetAllPersona5ArcanasResponseObject, error)
+
 	// (GET /grimoire/v1/p5/arcana/id/{arcanaUUID})
 	GetPersona5ArcanaByUUID(ctx context.Context, request GetPersona5ArcanaByUUIDRequestObject) (GetPersona5ArcanaByUUIDResponseObject, error)
 
@@ -758,6 +1005,31 @@ func NewStrictHandler(ssi StrictServerInterface, middlewares []StrictMiddlewareF
 type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
+}
+
+// GetAllPersona5Arcanas operation middleware
+func (sh *strictHandler) GetAllPersona5Arcanas(ctx echo.Context, params GetAllPersona5ArcanasParams) error {
+	var request GetAllPersona5ArcanasRequestObject
+
+	request.Params = params
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetAllPersona5Arcanas(ctx.Request().Context(), request.(GetAllPersona5ArcanasRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetAllPersona5Arcanas")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetAllPersona5ArcanasResponseObject); ok {
+		return validResponse.VisitGetAllPersona5ArcanasResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
 }
 
 // GetPersona5ArcanaByUUID operation middleware
@@ -813,39 +1085,41 @@ func (sh *strictHandler) GetPersona5ArcanaByName(ctx echo.Context, arcanaName Ar
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"AA==",
+	"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",
+	"AAD//4HoSm1cJgAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
