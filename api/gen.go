@@ -74,7 +74,7 @@ type P5Arcana struct {
 	ArcanaID ArcanaID `gorm:"type:uuid;primaryKey" json:"ArcanaID"`
 
 	// ArcanaName The name of the Major Arcana.
-	ArcanaName ArcanaName `json:"ArcanaName"`
+	ArcanaName ArcanaName `json:"ArcanaName" validate:"minLength=3,maxLength=10"`
 
 	// ArcanaNumber A number from 0 - 21 representing one of the 22 Major Arcana from tarot cards.
 	ArcanaNumber ArcanaNumber `json:"ArcanaNumber" validate:"minimum=0,maximum=21"`
@@ -86,7 +86,7 @@ type P5Arcana struct {
 // P5ArcanaResponse defines model for P5ArcanaResponse.
 type P5ArcanaResponse struct {
 	// ArcanaName The name of the Major Arcana.
-	ArcanaName ArcanaName `json:"ArcanaName"`
+	ArcanaName ArcanaName `json:"ArcanaName" validate:"minLength=3,maxLength=10"`
 
 	// ArcanaNumber A number from 0 - 21 representing one of the 22 Major Arcana from tarot cards.
 	ArcanaNumber ArcanaNumber `json:"ArcanaNumber" validate:"minimum=0,maximum=21"`
@@ -97,11 +97,17 @@ type P5ArcanaResponse struct {
 
 // P5Persona defines model for P5Persona.
 type P5Persona struct {
-	// Arcana A universally unique identifier for identifying one of the 22 Major Arcana.
-	Arcana ArcanaID `gorm:"type:uuid;primaryKey" json:"Arcana"`
+	// Agility An integer that represents the Persona's Agility stat.
+	Agility *Agility `json:"Agility,omitempty" validate:"minimum=1,maximum=99"`
+
+	// Arcana The name of the Major Arcana.
+	Arcana *ArcanaName `json:"Arcana,omitempty" validate:"minLength=3,maxLength=10"`
 
 	// CreatedAt Represents when the object was added to the database.
 	CreatedAt CreatedAt `json:"-"`
+
+	// Endurance An integer that represents the Persona's Endurance stat.
+	Endurance *Endurance `json:"Endurance,omitempty" validate:"minimum=1,maximum=99"`
 
 	// IsDLC Represents if the Persona is only available via Downloadable Content.
 	IsDLC *IsDLC `json:"IsDLC,omitempty"`
@@ -112,14 +118,20 @@ type P5Persona struct {
 	// Level The level of the Persona when first encountered; usually during fusion. The main character must be at least this level in order to fuse this Persona.
 	Level Level `json:"Level" validate:"minimum=1,maximum=99"`
 
+	// Luck An integer that represents the Persona's Luck stat.
+	Luck *Luck `json:"Luck,omitempty" validate:"minimum=1,maximum=99"`
+
+	// Magic An integer that represents the Persona's Magic stat.
+	Magic *Magic `json:"Magic,omitempty" validate:"minimum=1,maximum=99"`
+
+	// Name The name of the Persona.
+	Name PersonaName `json:"Name" validate:"minimum=1,maximum=24"`
+
 	// P5PersonaID A universally unique identifier for identifying a Persona from Persona 5.
-	P5PersonaID *P5PersonaID `gorm:"type:uuid;primaryKey" json:"P5PersonaID,omitempty"`
+	P5PersonaID P5PersonaID `gorm:"type:uuid;primaryKey" json:"P5PersonaID"`
 
-	// PersonaName The name of the Persona.
-	PersonaName *PersonaName `json:"PersonaName,omitempty" validate:"minimum=1,maximum=24"`
-
-	// Skill A universally unique identifier for identifying a skill that a Persona 5 Persona can learn.
-	Skill *P5SkillID `gorm:"type:uuid;primaryKey" json:"Skill,omitempty"`
+	// Strength An integer that represents the Persona's Strength stat.
+	Strength *Strength `json:"Strength,omitempty" validate:"minimum=1,maximum=99"`
 
 	// UpdatedAt Represents the last time when the object was updated in the database.
 	UpdatedAt UpdatedAt `json:"-"`
@@ -128,62 +140,56 @@ type P5Persona struct {
 // P5PersonaID A universally unique identifier for identifying a Persona from Persona 5.
 type P5PersonaID = openapi_types.UUID
 
-// P5PersonaSkill defines model for P5PersonaSkill.
-type P5PersonaSkill struct {
+// P5PersonaSkillJunction defines model for P5PersonaSkillJunction.
+type P5PersonaSkillJunction struct {
+	// LevelLearned The in-game level when the Persona learns the skill.
+	LevelLearned *P5SkillLevelLearned `json:"LevelLearned,omitempty"`
+
+	// Name The name of the Persona.
+	Name *PersonaName `json:"Name,omitempty" validate:"minimum=1,maximum=24"`
+
+	// SkillCost The cost to use the skill.
+	SkillCost *P5SkillCost `json:"SkillCost,omitempty"`
+
+	// SkillEffect The in-game description of what the skill does when used by the player.
+	SkillEffect *P5SkillEffect `json:"SkillEffect,omitempty"`
+
+	// SkillName The in-game name for the skill.
+	SkillName *P5SkillName `json:"SkillName,omitempty"`
+}
+
+// P5PersonaSkills defines model for P5PersonaSkills.
+type P5PersonaSkills struct {
 	// CreatedAt Represents when the object was added to the database.
 	CreatedAt *CreatedAt `json:"-"`
 
 	// SkillCost The cost to use the skill.
-	SkillCost *SkillCost `json:"SkillCost,omitempty"`
+	SkillCost *P5SkillCost `json:"SkillCost,omitempty"`
 
 	// SkillEffect The in-game description of what the skill does when used by the player.
-	SkillEffect *SkillEffect `json:"SkillEffect,omitempty"`
-
-	// SkillID A universally unique identifier for identifying a skill that a Persona 5 Persona can learn.
-	SkillID *P5SkillID `gorm:"type:uuid;primaryKey" json:"SkillID,omitempty"`
+	SkillEffect *P5SkillEffect `json:"SkillEffect,omitempty"`
 
 	// SkillName The in-game name for the skill.
-	SkillName *SkillName `json:"SkillName,omitempty"`
+	SkillName *P5SkillName `json:"SkillName,omitempty"`
 
 	// UpdatedAt Represents the last time when the object was updated in the database.
 	UpdatedAt *UpdatedAt `json:"-"`
 }
 
-// P5PersonaStats defines model for P5PersonaStats.
-type P5PersonaStats struct {
-	// Agility An integer that represents the Persona's Agility stat.
-	Agility Agility `json:"Agility" validate:"minimum=1,maximum=99"`
+// P5SkillCost The cost to use the skill.
+type P5SkillCost = string
 
-	// Endurance An integer that represents the Persona's Endurance stat.
-	Endurance Endurance `json:"Endurance" validate:"minimum=1,maximum=99"`
+// P5SkillEffect The in-game description of what the skill does when used by the player.
+type P5SkillEffect = string
 
-	// Luck An integer that represents the Persona's Luck stat.
-	Luck Luck `json:"Luck" validate:"minimum=1,maximum=99"`
+// P5SkillLevelLearned The in-game level when the Persona learns the skill.
+type P5SkillLevelLearned = int
 
-	// Magic An integer that represents the Persona's Magic stat.
-	Magic Magic `json:"Magic" validate:"minimum=1,maximum=99"`
-
-	// StatsID A universally unique identifier for identifying a Persona 5 Persona's stats.
-	StatsID openapi_types.UUID `gorm:"type:uuid;primaryKey" json:"StatsID"`
-
-	// Strength An integer that represents the Persona's Strength stat.
-	Strength Strength `json:"Strength" validate:"minimum=1,maximum=99"`
-}
-
-// P5SkillID A universally unique identifier for identifying a skill that a Persona 5 Persona can learn.
-type P5SkillID = openapi_types.UUID
+// P5SkillName The in-game name for the skill.
+type P5SkillName = string
 
 // PersonaName The name of the Persona.
 type PersonaName = string
-
-// SkillCost The cost to use the skill.
-type SkillCost = string
-
-// SkillEffect The in-game description of what the skill does when used by the player.
-type SkillEffect = string
-
-// SkillName The in-game name for the skill.
-type SkillName = string
 
 // Strength An integer that represents the Persona's Strength stat.
 type Strength = int
@@ -200,8 +206,8 @@ type Forbidden = ErrorBaseResponse
 // GetAllPersona5Arcanas defines model for GetAllPersona5Arcanas.
 type GetAllPersona5Arcanas = []P5ArcanaResponse
 
-// GetArcana defines model for GetArcana.
-type GetArcana = P5ArcanaResponse
+// GetPersona5Arcana defines model for GetPersona5Arcana.
+type GetPersona5Arcana = P5ArcanaResponse
 
 // MissingSubject defines model for MissingSubject.
 type MissingSubject = ErrorBaseResponse
@@ -226,6 +232,9 @@ type GetAllPersona5ArcanasParams struct {
 	// Offset The number of records to skip.
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
 }
+
+// CreatePersona5PersonaJSONRequestBody defines body for CreatePersona5Persona for application/json ContentType.
+type CreatePersona5PersonaJSONRequestBody = P5Persona
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -308,6 +317,11 @@ type ClientInterface interface {
 
 	// GetPersona5ArcanaByName request
 	GetPersona5ArcanaByName(ctx context.Context, arcanaName ArcanaName, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreatePersona5Persona request with any body
+	CreatePersona5PersonaWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreatePersona5Persona(ctx context.Context, body CreatePersona5PersonaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) GetAllPersona5Arcanas(ctx context.Context, params *GetAllPersona5ArcanasParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -336,6 +350,30 @@ func (c *Client) GetPersona5ArcanaByUUID(ctx context.Context, arcanaUUID ArcanaI
 
 func (c *Client) GetPersona5ArcanaByName(ctx context.Context, arcanaName ArcanaName, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetPersona5ArcanaByNameRequest(c.Server, arcanaName)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreatePersona5PersonaWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreatePersona5PersonaRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreatePersona5Persona(ctx context.Context, body CreatePersona5PersonaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreatePersona5PersonaRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -477,6 +515,46 @@ func NewGetPersona5ArcanaByNameRequest(server string, arcanaName ArcanaName) (*h
 	return req, nil
 }
 
+// NewCreatePersona5PersonaRequest calls the generic CreatePersona5Persona builder with application/json body
+func NewCreatePersona5PersonaRequest(server string, body CreatePersona5PersonaJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreatePersona5PersonaRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreatePersona5PersonaRequestWithBody generates requests for CreatePersona5Persona with any type of body
+func NewCreatePersona5PersonaRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/grimoire/v1/p5/persona/create")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -528,6 +606,11 @@ type ClientWithResponsesInterface interface {
 
 	// GetPersona5ArcanaByName request
 	GetPersona5ArcanaByNameWithResponse(ctx context.Context, arcanaName ArcanaName, reqEditors ...RequestEditorFn) (*GetPersona5ArcanaByNameResponse, error)
+
+	// CreatePersona5Persona request with any body
+	CreatePersona5PersonaWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePersona5PersonaResponse, error)
+
+	CreatePersona5PersonaWithResponse(ctx context.Context, body CreatePersona5PersonaJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePersona5PersonaResponse, error)
 }
 
 type GetAllPersona5ArcanasResponse struct {
@@ -602,6 +685,27 @@ func (r GetPersona5ArcanaByNameResponse) StatusCode() int {
 	return 0
 }
 
+type CreatePersona5PersonaResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r CreatePersona5PersonaResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreatePersona5PersonaResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // GetAllPersona5ArcanasWithResponse request returning *GetAllPersona5ArcanasResponse
 func (c *ClientWithResponses) GetAllPersona5ArcanasWithResponse(ctx context.Context, params *GetAllPersona5ArcanasParams, reqEditors ...RequestEditorFn) (*GetAllPersona5ArcanasResponse, error) {
 	rsp, err := c.GetAllPersona5Arcanas(ctx, params, reqEditors...)
@@ -627,6 +731,23 @@ func (c *ClientWithResponses) GetPersona5ArcanaByNameWithResponse(ctx context.Co
 		return nil, err
 	}
 	return ParseGetPersona5ArcanaByNameResponse(rsp)
+}
+
+// CreatePersona5PersonaWithBodyWithResponse request with arbitrary body returning *CreatePersona5PersonaResponse
+func (c *ClientWithResponses) CreatePersona5PersonaWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePersona5PersonaResponse, error) {
+	rsp, err := c.CreatePersona5PersonaWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreatePersona5PersonaResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreatePersona5PersonaWithResponse(ctx context.Context, body CreatePersona5PersonaJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePersona5PersonaResponse, error) {
+	rsp, err := c.CreatePersona5Persona(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreatePersona5PersonaResponse(rsp)
 }
 
 // ParseGetAllPersona5ArcanasResponse parses an HTTP response from a GetAllPersona5ArcanasWithResponse call
@@ -749,6 +870,22 @@ func ParseGetPersona5ArcanaByNameResponse(rsp *http.Response) (*GetPersona5Arcan
 	return response, nil
 }
 
+// ParseCreatePersona5PersonaResponse parses an HTTP response from a CreatePersona5PersonaWithResponse call
+func ParseCreatePersona5PersonaResponse(rsp *http.Response) (*CreatePersona5PersonaResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreatePersona5PersonaResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
@@ -760,6 +897,9 @@ type ServerInterface interface {
 
 	// (GET /grimoire/v1/p5/arcana/name/{arcanaName})
 	GetPersona5ArcanaByName(ctx echo.Context, arcanaName ArcanaName) error
+
+	// (POST /grimoire/v1/p5/persona/create)
+	CreatePersona5Persona(ctx echo.Context) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -824,6 +964,15 @@ func (w *ServerInterfaceWrapper) GetPersona5ArcanaByName(ctx echo.Context) error
 	return err
 }
 
+// CreatePersona5Persona converts echo context to params.
+func (w *ServerInterfaceWrapper) CreatePersona5Persona(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.CreatePersona5Persona(ctx)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -855,6 +1004,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/grimoire/v1/p5/arcana/all", wrapper.GetAllPersona5Arcanas)
 	router.GET(baseURL+"/grimoire/v1/p5/arcana/id/:arcanaUUID", wrapper.GetPersona5ArcanaByUUID)
 	router.GET(baseURL+"/grimoire/v1/p5/arcana/name/:arcanaName", wrapper.GetPersona5ArcanaByName)
+	router.POST(baseURL+"/grimoire/v1/p5/persona/create", wrapper.CreatePersona5Persona)
 
 }
 
@@ -864,7 +1014,7 @@ type ForbiddenJSONResponse ErrorBaseResponse
 
 type GetAllPersona5ArcanasJSONResponse []P5ArcanaResponse
 
-type GetArcanaJSONResponse P5ArcanaResponse
+type GetPersona5ArcanaJSONResponse P5ArcanaResponse
 
 type MissingSubjectJSONResponse ErrorBaseResponse
 
@@ -919,7 +1069,7 @@ type GetPersona5ArcanaByUUIDResponseObject interface {
 	VisitGetPersona5ArcanaByUUIDResponse(w http.ResponseWriter) error
 }
 
-type GetPersona5ArcanaByUUID200JSONResponse = GetArcanaJSONResponse
+type GetPersona5ArcanaByUUID200JSONResponse = GetPersona5ArcanaJSONResponse
 
 func (response GetPersona5ArcanaByUUID200JSONResponse) VisitGetPersona5ArcanaByUUIDResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -954,7 +1104,7 @@ type GetPersona5ArcanaByNameResponseObject interface {
 	VisitGetPersona5ArcanaByNameResponse(w http.ResponseWriter) error
 }
 
-type GetPersona5ArcanaByName200JSONResponse = GetArcanaJSONResponse
+type GetPersona5ArcanaByName200JSONResponse = GetPersona5ArcanaJSONResponse
 
 func (response GetPersona5ArcanaByName200JSONResponse) VisitGetPersona5ArcanaByNameResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -981,6 +1131,14 @@ func (response GetPersona5ArcanaByName500JSONResponse) VisitGetPersona5ArcanaByN
 	return json.NewEncoder(w).Encode(response)
 }
 
+type CreatePersona5PersonaRequestObject struct {
+	Body *CreatePersona5PersonaJSONRequestBody
+}
+
+type CreatePersona5PersonaResponseObject interface {
+	VisitCreatePersona5PersonaResponse(w http.ResponseWriter) error
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 
@@ -992,6 +1150,9 @@ type StrictServerInterface interface {
 
 	// (GET /grimoire/v1/p5/arcana/name/{arcanaName})
 	GetPersona5ArcanaByName(ctx context.Context, request GetPersona5ArcanaByNameRequestObject) (GetPersona5ArcanaByNameResponseObject, error)
+
+	// (POST /grimoire/v1/p5/persona/create)
+	CreatePersona5Persona(ctx context.Context, request CreatePersona5PersonaRequestObject) (CreatePersona5PersonaResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx echo.Context, args interface{}) (interface{}, error)
@@ -1082,44 +1243,72 @@ func (sh *strictHandler) GetPersona5ArcanaByName(ctx echo.Context, arcanaName Ar
 	return nil
 }
 
+// CreatePersona5Persona operation middleware
+func (sh *strictHandler) CreatePersona5Persona(ctx echo.Context) error {
+	var request CreatePersona5PersonaRequestObject
+
+	var body CreatePersona5PersonaJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.CreatePersona5Persona(ctx.Request().Context(), request.(CreatePersona5PersonaRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreatePersona5Persona")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(CreatePersona5PersonaResponseObject); ok {
+		return validResponse.VisitCreatePersona5PersonaResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"AAD//4HoSm1cJgAA",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

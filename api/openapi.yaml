@@ -23,7 +23,7 @@ paths:
             $ref: "#/components/schemas/ArcanaID"
       responses:
         200:
-          $ref: "#/components/responses/GetArcana"
+          $ref: "#/components/responses/GetPersona5Arcana"
         404:
           $ref: "#/components/responses/NotFound"
         500:
@@ -43,7 +43,7 @@ paths:
             $ref: "#/components/schemas/ArcanaName"
       responses:
         200:
-          $ref: "#/components/responses/GetArcana"
+          $ref: "#/components/responses/GetPersona5Arcana"
         404:
           $ref: "#/components/responses/NotFound"
         500:
@@ -74,11 +74,22 @@ paths:
           $ref: "#/components/responses/BadRequest"
         500:
           $ref: "#/components/responses/ServerError"
+  # Personas
+  # CREATE
+  /grimoire/v1/p5/persona/create:
+    post:
+      operationId: createPersona5Persona
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/P5Persona"
 components:
   responses:
     # Arcana
     # GET Responses
-    GetArcana:
+    GetPersona5Arcana:
       description: Return an Arcana object.
       content:
         application/json:
@@ -160,14 +171,12 @@ components:
     # Database Schemas #
     ####################
     P5Persona:
-      x-oapi-codegen-extra-tags:
-        gorm: "foreignKey:ArcanaID;references:Arcana"
       type: object
       required:
-        - PersonaID
+        - P5PersonaID
         - Name
         - Level
-        - Arcana
+        - ArcanaName
         - DLC
         - TreasureDemon
         - CreatedAt
@@ -175,12 +184,16 @@ components:
       properties:
         P5PersonaID:
           $ref: "#/components/schemas/P5PersonaID"
-        PersonaName:
+        Name:
+          x-oapi-codegen-extra-tags:
+            gorm: "many2many:P5PersonaSkillJunction;"
           $ref: "#/components/schemas/PersonaName"
         Level:
           $ref: "#/components/schemas/Level"
         Arcana:
-          $ref: "#/components/schemas/ArcanaID"
+          x-oapi-codegen-extra-tags:
+            gorm: "foreignKey:ArcanaName"
+          $ref: "#/components/schemas/ArcanaName"
         IsDLC:
           $ref: "#/components/schemas/IsDLC"
         IsTreasureDemon:
@@ -189,8 +202,16 @@ components:
           $ref: "#/components/schemas/CreatedAt"
         UpdatedAt:
           $ref: "#/components/schemas/UpdatedAt"
-        Skill:
-          $ref: "#/components/schemas/P5SkillID"
+        Strength:
+          $ref: "#/components/schemas/Strength"
+        Magic:
+          $ref: "#/components/schemas/Magic"
+        Endurance:
+          $ref: "#/components/schemas/Endurance"
+        Agility:
+          $ref: "#/components/schemas/Agility"
+        Luck:
+          $ref: "#/components/schemas/Luck"
     P5Arcana:
       type: object
       required:
@@ -220,52 +241,32 @@ components:
           $ref: "#/components/schemas/ArcanaName"
         ArcanaNumeral:
           $ref: "#/components/schemas/ArcanaNumeral"
-    P5PersonaStats:
-      x-oapi-codegen-extra-tags:
-        gorm: "foreignKey:P5PersonaID;references:StatsID"
-      type: object
-      required:
-        - StatsID
-        - Strength
-        - Magic
-        - Endurance
-        - Agility
-        - Luck
-      properties:
-        StatsID:
-          description: A universally unique identifier for identifying a Persona 5 Persona's stats.
-          type: string
-          format: uuid
-          pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
-          x-oapi-codegen-extra-tags:
-            gorm: "type:uuid;primaryKey"
-        Strength:
-          $ref: "#/components/schemas/Strength"
-        Magic:
-          $ref: "#/components/schemas/Magic"
-        Endurance:
-          $ref: "#/components/schemas/Endurance"
-        Agility:
-          $ref: "#/components/schemas/Agility"
-        Luck:
-          $ref: "#/components/schemas/Luck"
-    P5PersonaSkill:
-      x-oapi-codegen-extra-tags:
-        gorm: "foreignKey:Skill;references:SkillID"
+    P5PersonaSkills:
       type: object
       properties:
-        SkillID:
-          $ref: "#/components/schemas/P5SkillID"
         SkillName:
-          $ref: "#/components/schemas/SkillName"
+          $ref: "#/components/schemas/P5SkillName"
         SkillCost:
-          $ref: "#/components/schemas/SkillCost"
+          $ref: "#/components/schemas/P5SkillCost"
         SkillEffect:
-          $ref: "#/components/schemas/SkillEffect"
+          $ref: "#/components/schemas/P5SkillEffect"
         CreatedAt:
           $ref: "#/components/schemas/CreatedAt"
         UpdatedAt:
           $ref: "#/components/schemas/UpdatedAt"
+    P5PersonaSkillJunction:
+      type: object
+      properties:
+        Name:
+          $ref: "#/components/schemas/PersonaName"
+        SkillName:
+          $ref: "#/components/schemas/P5SkillName"
+        SkillCost:
+          $ref: "#/components/schemas/P5SkillCost"
+        SkillEffect:
+          $ref: "#/components/schemas/P5SkillEffect"
+        LevelLearned:
+          $ref: "#/components/schemas/P5SkillLevelLearned"
     ####################
     # Referenced Types #
     ####################
@@ -299,7 +300,7 @@ components:
       description: The name of the Major Arcana.
       type: string
       x-oapi-codegen-extra-tags:
-      validate: "minLength=3,maxLength=10"
+        validate: "minLength=3,maxLength=10"
     ArcanaNumber:
       description: A number from 0 - 21 representing one of the 22 Major Arcana from tarot cards.
       type: integer
@@ -330,22 +331,18 @@ components:
       x-oapi-codegen-extra-tags:
         validate: "minimum=1,maximum=24"
     # P5 Skills
-    P5SkillID:
-      description: A universally unique identifier for identifying a skill that a Persona 5 Persona can learn.
-      type: string
-      format: uuid
-      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89abAB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}"
-      x-oapi-codegen-extra-tags:
-        gorm: "type:uuid;primaryKey"
-    SkillName:
+    P5SkillName:
       description: The in-game name for the skill.
       type: string
-    SkillCost:
+    P5SkillCost:
       description: The cost to use the skill.
       type: string
-    SkillEffect:
+    P5SkillEffect:
       description: The in-game description of what the skill does when used by the player.
       type: string
+    P5SkillLevelLearned:
+      description: The in-game level when the Persona learns the skill.
+      type: integer
     # Stats
     Strength:
       description: An integer that represents the Persona's Strength stat.
