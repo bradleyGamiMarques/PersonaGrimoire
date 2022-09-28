@@ -59,3 +59,8 @@ func (p *PersonaGrimoireImpl) GetPersona5ArcanaByUUID(ctx context.Context, arcan
 	}
 	return arcana, nil
 }
+
+// CRUDs relating to Persona 5 Personas
+func (p *PersonaGrimoireImpl) CreatePersona5Persona(ctx context.Context) (err error) {
+	return fmt.Errorf("NOT IMPLEMENTED")
+}

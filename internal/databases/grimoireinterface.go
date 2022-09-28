@@ -16,4 +16,7 @@ type PersonaGrimoire interface {
 	GetPersona5ArcanaByName(ctx context.Context, arcanaName api.ArcanaName) (arcana api.P5ArcanaResponse, err error)
 	GetPersona5ArcanaByUUID(ctx context.Context, arcanaUUID api.ArcanaID) (arcana api.P5ArcanaResponse, err error)
 	GetAllPersona5Arcanas(ctx context.Context, limit, offset int) (arcanas []api.P5ArcanaResponse, err error)
+
+	// CRUDs relating to P5 Personas
+	CreatePersona5Persona(ctx context.Context) (err error)
 }
