@@ -21,13 +21,12 @@ func RegisterDatabaseComponents(gorm *gorm.DB, logger *logrus.Logger) {
 		logger.Panicf("gorm Migration Error for P5Persona: %v", migrationError)
 	}
 
-	migrationError = gorm.AutoMigrate(&api.P5PersonaSkill{})
+	migrationError = gorm.AutoMigrate(&api.P5PersonaSkills{})
 	if migrationError != nil {
 		logger.Panicf("gorm Migration Error for P5PersonaSkill: %v", migrationError)
 	}
-
-	migrationError = gorm.AutoMigrate(&api.P5PersonaStats{})
+	migrationError = gorm.AutoMigrate(&api.P5PersonaSkillJunction{})
 	if migrationError != nil {
-		logger.Panicf("gorm Migration Error for P5PersonaSkill: %v", migrationError)
+		logger.Panicf("gorm Migration Error for P5PersonaSkillJunction: %v", migrationError)
 	}
 }
